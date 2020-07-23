@@ -88,4 +88,19 @@ type Client = {
         }
         client
 
+    static member CreateWithDependencies 
+            (dependencies: Dependencies)
+            (clientId: int) 
+            (clientSecret: string) 
+            : Async<Result<Client, FailureTokenResponse>> =
+        job {
+            let request : TRequest = Client.BuildTokenRequest clientId clientSecret dependencies.TokenUrl
+            let! (tokenChoice : Choice<TResponse, exn>) = dependencies.TryGetResponse request
+            let! (tokenResponse : Result<AccessTokenResponse, FailureTokenResponse>) = 
+                Client.BuildTokenResponseJob tokenChoice dependencies.ReadBodyAsString            
+            let client : Result<Client, FailureTokenResponse> = 
+                tokenResponse |> Result.map (Client.BuildClient dependencies) 
+            return client              
+        } |> Job.toAsync
 
+        
