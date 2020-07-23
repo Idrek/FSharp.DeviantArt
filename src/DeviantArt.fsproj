@@ -10,6 +10,7 @@
     <Compile Include="Types/AccessTokenResponse.fs" />
     <Compile Include="Aliases.fs" />
     <Compile Include="Dependencies.fs" />
+    <Compile Include="Endpoints.fs" />
     <Compile Include="Client.fs" />
   </ItemGroup>
 
