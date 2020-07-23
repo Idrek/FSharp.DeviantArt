@@ -74,3 +74,18 @@ type Client = {
                 return error                
         }      
 
+    static member BuildClient
+            (dependencies: Dependencies)
+            (response: AccessTokenResponse)
+            : Client =
+        let endpoints : Endpoints = Endpoints.WithDefaults ()
+        let client : Client = { 
+            ExpiresAt = response.ExpiresIn |> float |> dependencies.CreationTime.AddSeconds
+            AccessToken = response.AccessToken
+            TokenType = response.TokenType
+            Dependencies = dependencies
+            Endpoints = endpoints
+        }
+        client
+
+
