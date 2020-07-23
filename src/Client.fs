@@ -20,8 +20,11 @@ module S = Settings
 // ---------------------------------
 
 type Client = {
+    ExpiresAt: DateTimeOffset
     AccessToken: string
     TokenType: string
+    Dependencies: Dependencies
+    Endpoints: Endpoints
 } with
     static member BuildTokenRequest (clientId: int) (clientSecret: string) (tokenUrl: string) : TRequest =
         let request = 
