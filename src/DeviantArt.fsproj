@@ -9,6 +9,7 @@
     <Compile Include="Types/FailureTokenResponse.fs" />
     <Compile Include="Types/AccessTokenResponse.fs" />
     <Compile Include="Aliases.fs" />
+    <Compile Include="Dependencies.fs" />
     <Compile Include="Client.fs" />
   </ItemGroup>
 
