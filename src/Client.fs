@@ -9,6 +9,7 @@ open Hopac
 
 module C = HttpFs.Client
 module MRequest = C.Request
+module MResponse = C.Response
 module S = Settings
 
 // ---------------------------------
@@ -103,4 +104,14 @@ type Client = {
             return client              
         } |> Job.toAsync
 
-        
+    static member Create (clientId: int) (clientSecret: string) =
+        let dependencies : Dependencies = { 
+            TryGetResponse = C.tryGetResponse
+            ReadBodyAsString = MResponse.readBodyAsString
+            GetResponse = C.getResponse 
+            // Used to calculate expiration. Forbid token usage 60 seconds before the time.
+            CreationTime = DateTimeOffset.UtcNow.AddSeconds(-60.0)
+            TokenUrl = "https://www.deviantart.com/oauth2/token"
+        }
+        Client.CreateWithDependencies dependencies clientId clientSecret
+
