@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FSharp.Json" Version="0.4.0" />
     <PackageReference Include="Hopac" Version="0.4.1" />
     <PackageReference Include="Http.fs" Version="5.4.0" />
   </ItemGroup>
