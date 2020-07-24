@@ -6,6 +6,7 @@ type Endpoints = {
     HotDeviations: string
     MoreLikeThis: string
     MoreLikeThisPreview: string
+    Newest: string
 } with
     static member WithDefaults () : Endpoints =
         let prefix = "https://www.deviantart.com/api/v1/oauth2"
@@ -16,5 +17,6 @@ type Endpoints = {
             HotDeviations = sprintf "%s/%s/hot" prefix browse
             MoreLikeThis = sprintf "%s/%s/morelikethis" prefix browse
             MoreLikeThisPreview = sprintf "%s/%s/morelikethis/preview" prefix browse
+            Newest = sprintf "%s/%s/newest" prefix browse
         }
 
