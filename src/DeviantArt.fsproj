@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Compile Include="Types/Deviation.fs" />
+    <Compile Include="Types/Browse/Daily.fs" />
     <Compile Include="Types/Browse/Category.fs" />
     <Compile Include="Settings.fs" />
     <Compile Include="Types/FailureTokenResponse.fs" />
