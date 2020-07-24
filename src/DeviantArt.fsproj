@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Rules.fs" />
     <Compile Include="Types/Deviation.fs" />
     <Compile Include="Types/Browse/Daily.fs" />
     <Compile Include="Types/Browse/Category.fs" />
