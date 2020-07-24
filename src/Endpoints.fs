@@ -11,6 +11,7 @@ type Endpoints = {
     Tags: string
     TagsSearch: string
     Topic: string
+    Topics: string
 } with
     static member WithDefaults () : Endpoints =
         let prefix = "https://www.deviantart.com/api/v1/oauth2"
@@ -26,5 +27,6 @@ type Endpoints = {
             Tags = sprintf "%s/%s/tags" prefix browse
             TagsSearch = sprintf "%s/%s/tags/search" prefix browse
             Topic = sprintf "%s/%s/topic" prefix browse
+            Topics = sprintf "%s/%s/topics" prefix browse
         }
 
