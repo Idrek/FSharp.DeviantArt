@@ -15,6 +15,7 @@ module MoreLikeThis = DeviantArt.Types.Browse.MoreLikeThis
 module MoreLikeThisPreview = DeviantArt.Types.Browse.MoreLikeThisPreview
 module MRequest = C.Request
 module MResponse = C.Response
+module Newest = DeviantArt.Types.Browse.Newest
 module S = Settings
 module T = Validator.Types
 
@@ -218,6 +219,24 @@ type Client = {
             let moreLikeThisPreview = 
                 json |> Result.bind (Json.deserializeEx<MoreLikeThisPreview.Response> S.jsonConfig >> Ok)
             return moreLikeThisPreview            
+        } |> Job.toAsync
+
+    member this.Newest (parameters: Newest.Parameters) : Async<Result<Newest.Response, Set<string>>> =
+        job {
+            match parameters.Validate () with
+            | Error errors ->
+                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+            | Ok validatedParameters ->
+                let request : TRequest =
+                    this.CreateRequest this.Endpoints.Newest
+                    |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
+                    |> Client.AddOptionalQueryString "category_path" validatedParameters.CategoryPath
+                    |> Client.AddOptionalQueryString "q" validatedParameters.Q
+                    |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
+                    |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
+                let! json = this.RunRequestJob request
+                let newest = Result.bind (Json.deserializeEx<Newest.Response> S.jsonConfig >> Ok) json
+                return newest                
         } |> Job.toAsync
 
 
