@@ -115,3 +115,9 @@ type Client = {
         }
         Client.CreateWithDependencies dependencies clientId clientSecret
 
+    member this.CreateRequest (url: string) : TRequest =
+        let tokenHeader = sprintf "%s %s" this.TokenType this.AccessToken
+        MRequest.createUrl (C.HttpMethod.Get) url
+        |> MRequest.setHeader (C.RequestHeader.Authorization tokenHeader)
+
+        
