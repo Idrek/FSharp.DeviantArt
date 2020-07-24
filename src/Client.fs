@@ -120,4 +120,6 @@ type Client = {
         MRequest.createUrl (C.HttpMethod.Get) url
         |> MRequest.setHeader (C.RequestHeader.Authorization tokenHeader)
 
-        
+    static member AddQueryString (name: string) (value: string) (request: TRequest) : TRequest =
+        MRequest.queryStringItem name value request
+
