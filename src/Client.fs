@@ -23,6 +23,7 @@ module Tags = DeviantArt.Types.Browse.Tags
 module TagsSearch = DeviantArt.Types.Browse.TagsSearch
 module Topic = DeviantArt.Types.Browse.Topic
 module Topics = DeviantArt.Types.Browse.Topics
+module TopTopics = DeviantArt.Types.Browse.TopTopics
 
 // ---------------------------------
 // Type aliases
@@ -326,5 +327,15 @@ type Client = {
                 return topics 
         } |> Job.toAsync
 
-        
+    member this.TopTopics (parameters: TopTopics.Parameters) : Async<Result<TopTopics.Response, Set<string>>> =
+        let request : TRequest = 
+            this.CreateRequest this.Endpoints.TopTopics
+            |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
+        job {
+            let! json = this.RunRequestJob request
+            let topTopics = Result.bind (Json.deserializeEx<TopTopics.Response> S.jsonConfig >> Ok) json
+            return topTopics
+        } |> Job.toAsync
+
+
 
