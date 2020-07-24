@@ -7,6 +7,7 @@
   <ItemGroup>
     <Compile Include="Rules.fs" />
     <Compile Include="Types/Deviation.fs" />
+    <Compile Include="Types/Browse/Topics.fs" />
     <Compile Include="Types/Browse/Topic.fs" />
     <Compile Include="Types/Browse/TagsSearch.fs" />
     <Compile Include="Types/Browse/Tags.fs" />
