@@ -8,6 +8,7 @@ open Hopac
 // ---------------------------------
 
 module C = HttpFs.Client
+module Category = DeviantArt.Types.Browse.Category
 module MRequest = C.Request
 module MResponse = C.Response
 module S = Settings
@@ -141,6 +142,16 @@ type Client = {
                 return result
         }
 
+    member this.CategoryTree (parameters: Category.Parameters) : Async<Result<Category.Response, array<string>>> =
+        let request : TRequest = 
+            this.CreateRequest this.Endpoints.CategoryTree 
+            |> Client.AddQueryString "catpath" parameters.CategoryPath
+            |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
+        job {
+            let! json = this.RunRequestJob request
+            let categories = 
+                Result.bind (Json.deserializeEx<Category.Response> S.jsonConfig >> Ok) json
+            return categories
+        } |> Job.toAsync 
 
 
-        
