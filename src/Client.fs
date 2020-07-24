@@ -16,6 +16,7 @@ module MoreLikeThisPreview = DeviantArt.Types.Browse.MoreLikeThisPreview
 module MRequest = C.Request
 module MResponse = C.Response
 module Newest = DeviantArt.Types.Browse.Newest
+module Popular = DeviantArt.Types.Browse.Popular
 module S = Settings
 module T = Validator.Types
 
@@ -237,6 +238,26 @@ type Client = {
                 let! json = this.RunRequestJob request
                 let newest = Result.bind (Json.deserializeEx<Newest.Response> S.jsonConfig >> Ok) json
                 return newest                
+        } |> Job.toAsync
+
+    member this.Popular (parameters: Popular.Parameters) : Async<Result<Popular.Response, Set<string>>> =
+        job {
+            match parameters.Validate () with
+            | Error errors ->
+                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+            | Ok validatedParameters ->
+                let request : TRequest =
+                    this.CreateRequest this.Endpoints.Popular
+                    |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
+                    |> Client.AddOptionalQueryString "category_path" validatedParameters.CategoryPath
+                    |> Client.AddOptionalQueryString "q" validatedParameters.Q
+                    |> Client.AddOptionalQueryString "timerange" 
+                        (Option.map (fun tr -> tr.ToString()) validatedParameters.Timerange)
+                    |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
+                    |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
+                let! json = this.RunRequestJob request
+                let popular = Result.bind (Json.deserializeEx<Popular.Response> S.jsonConfig >> Ok) json
+                return popular                
         } |> Job.toAsync
 
 
