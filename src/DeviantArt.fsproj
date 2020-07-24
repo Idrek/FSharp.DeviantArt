@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Types/Browse/Category.fs" />
     <Compile Include="Settings.fs" />
     <Compile Include="Types/FailureTokenResponse.fs" />
     <Compile Include="Types/AccessTokenResponse.fs" />
