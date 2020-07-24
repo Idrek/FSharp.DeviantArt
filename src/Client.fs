@@ -25,6 +25,7 @@ module Topic = DeviantArt.Types.Browse.Topic
 module Topics = DeviantArt.Types.Browse.Topics
 module TopTopics = DeviantArt.Types.Browse.TopTopics
 module Undiscovered = DeviantArt.Types.Browse.Undiscovered
+module UserJournals = DeviantArt.Types.Browse.UserJournals
 
 // ---------------------------------
 // Type aliases
@@ -354,5 +355,23 @@ type Client = {
                 let undiscovered = Result.bind (Json.deserializeEx<Undiscovered.Response> S.jsonConfig >> Ok) json
                 return undiscovered
         } |> Job.toAsync
-        
+
+    member this.UserJournals (parameters: UserJournals.Parameters) : Async<Result<UserJournals.Response, Set<string>>> =
+        job {
+            match parameters.Validate () with
+            | Error errors ->
+                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+            | Ok validatedParameters ->
+                let request : TRequest =
+                    this.CreateRequest this.Endpoints.UserJournals
+                    |> Client.AddQueryString "username" validatedParameters.Username
+                    |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
+                    |> Client.AddOptionalQueryString "featured" (Option.map string validatedParameters.Featured)
+                    |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
+                    |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
+                let! json = this.RunRequestJob request
+                let userJournals = Result.bind (Json.deserializeEx<UserJournals.Response> S.jsonConfig >> Ok) json
+                return userJournals                
+        } |> Job.toAsync
+
 
