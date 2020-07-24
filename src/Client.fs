@@ -143,7 +143,7 @@ type Client = {
                 return result
         }
 
-    member this.CategoryTree (parameters: Category.Parameters) : Async<Result<Category.Response, array<string>>> =
+    member this.CategoryTree (parameters: Category.Parameters) : Async<Result<Category.Response, Set<string>>> =
         let request : TRequest = 
             this.CreateRequest this.Endpoints.CategoryTree 
             |> Client.AddQueryString "catpath" parameters.CategoryPath
