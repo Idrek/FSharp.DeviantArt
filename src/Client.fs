@@ -130,7 +130,7 @@ type Client = {
         | None -> request
         | Some v -> Client.AddQueryString name v request
 
-    member this.RunRequestJob (request: TRequest) : Job<Result<string, array<string>>> = 
+    member this.RunRequestJob (request: TRequest) : Job<Result<string, Set<string>>> = 
         job {
             try 
                 use! response = this.Dependencies.GetResponse request
@@ -139,7 +139,7 @@ type Client = {
                 return result
             with
             | e ->
-                let result = Error [|e.Message|]
+                let result = Error (Set [|e.Message|])
                 return result
         }
 
