@@ -12,6 +12,7 @@ module Category = DeviantArt.Types.Browse.Category
 module Daily = DeviantArt.Types.Browse.Daily
 module HotDeviations = DeviantArt.Types.Browse.HotDeviations
 module MoreLikeThis = DeviantArt.Types.Browse.MoreLikeThis
+module MoreLikeThisPreview = DeviantArt.Types.Browse.MoreLikeThisPreview
 module MRequest = C.Request
 module MResponse = C.Response
 module S = Settings
@@ -205,6 +206,19 @@ type Client = {
                 return deviations                
         } |> Job.toAsync
 
-        
+    member this.MoreLikeThisPreview 
+            (parameters: MoreLikeThisPreview.Parameters)
+            : Async<Result<MoreLikeThisPreview.Response, Set<string>>> =
+        let request : TRequest =
+            this.CreateRequest this.Endpoints.MoreLikeThisPreview
+            |> Client.AddQueryString "seed" (string parameters.Seed)
+            |> Client.AddQueryString "mature_content" (string parameters.MatureContent)        
+        job {
+            let! json = this.RunRequestJob request
+            let moreLikeThisPreview = 
+                json |> Result.bind (Json.deserializeEx<MoreLikeThisPreview.Response> S.jsonConfig >> Ok)
+            return moreLikeThisPreview            
+        } |> Job.toAsync
+
 
 
