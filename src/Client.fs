@@ -128,4 +128,19 @@ type Client = {
         | None -> request
         | Some v -> Client.AddQueryString name v request
 
+    member this.RunRequestJob (request: TRequest) : Job<Result<string, array<string>>> = 
+        job {
+            try 
+                use! response = this.Dependencies.GetResponse request
+                let! bodyJson = this.Dependencies.ReadBodyAsString response
+                let result = Ok bodyJson
+                return result
+            with
+            | e ->
+                let result = Error [|e.Message|]
+                return result
+        }
+
+
+
         
