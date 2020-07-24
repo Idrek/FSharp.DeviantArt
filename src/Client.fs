@@ -11,6 +11,7 @@ module C = HttpFs.Client
 module Category = DeviantArt.Types.Browse.Category
 module Daily = DeviantArt.Types.Browse.Daily
 module FolderId = DeviantArt.Types.Collections.FolderId
+module Folders = DeviantArt.Types.Collections.Folders
 module HotDeviations = DeviantArt.Types.Browse.HotDeviations
 module MoreLikeThis = DeviantArt.Types.Browse.MoreLikeThis
 module MoreLikeThisPreview = DeviantArt.Types.Browse.MoreLikeThisPreview
@@ -393,6 +394,28 @@ type Client = {
                 let collectionsFolderId = 
                     Result.bind (Json.deserializeEx<FolderId.Response> S.jsonConfig >> Ok) json
                 return collectionsFolderId                
+        } |> Job.toAsync
+
+    member this.Folders 
+            (parameters: Folders.Parameters)
+            : Async<Result<Folders.Response, Set<string>>> =
+        job {
+            match parameters.Validate() with
+            | Error errors ->
+                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+            | Ok validatedParameters ->
+                let request : TRequest =
+                    this.CreateRequest this.Endpoints.Folders
+                    |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
+                    |> Client.AddOptionalQueryString "username" validatedParameters.Username
+                    |> Client.AddOptionalQueryString "calculate_size" (Option.map string validatedParameters.CalculateSize)
+                    |> Client.AddOptionalQueryString "ext_preload" (Option.map string validatedParameters.ExtPreload)
+                    |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
+                    |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
+                let! json = this.RunRequestJob request
+                let folders = 
+                    Result.bind (Json.deserializeEx<Folders.Response> S.jsonConfig >> Ok) json
+                return folders                                
         } |> Job.toAsync
 
 
