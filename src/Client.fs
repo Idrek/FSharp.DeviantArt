@@ -20,6 +20,7 @@ module Popular = DeviantArt.Types.Browse.Popular
 module S = Settings
 module T = Validator.Types
 module Tags = DeviantArt.Types.Browse.Tags
+module TagsSearch = DeviantArt.Types.Browse.TagsSearch
 
 // ---------------------------------
 // Type aliases
@@ -276,5 +277,16 @@ type Client = {
                 let! json = this.RunRequestJob request
                 let tags = Result.bind (Json.deserializeEx<Tags.Response> S.jsonConfig >> Ok) json
                 return tags                
+        } |> Job.toAsync
+
+    member this.TagsSearch (parameters: TagsSearch.Parameters) : Async<Result<TagsSearch.Response, Set<string>>> =
+        let request : TRequest =
+            this.CreateRequest this.Endpoints.TagsSearch
+            |> Client.AddQueryString "tag_name" parameters.TagName
+            |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
+        job {
+            let! json = this.RunRequestJob request
+            let tagsSearch = Result.bind (Json.deserializeEx<TagsSearch.Response> S.jsonConfig >> Ok) json
+            return tagsSearch
         } |> Job.toAsync
 
