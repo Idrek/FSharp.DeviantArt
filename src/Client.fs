@@ -123,3 +123,9 @@ type Client = {
     static member AddQueryString (name: string) (value: string) (request: TRequest) : TRequest =
         MRequest.queryStringItem name value request
 
+    static member AddOptionalQueryString (name: string) (value: option<string>) (request: TRequest) : TRequest =
+        match value with
+        | None -> request
+        | Some v -> Client.AddQueryString name v request
+
+        
