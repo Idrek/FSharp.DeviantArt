@@ -22,6 +22,7 @@ module T = Validator.Types
 module Tags = DeviantArt.Types.Browse.Tags
 module TagsSearch = DeviantArt.Types.Browse.TagsSearch
 module Topic = DeviantArt.Types.Browse.Topic
+module Topics = DeviantArt.Types.Browse.Topics
 
 // ---------------------------------
 // Type aliases
@@ -307,4 +308,23 @@ type Client = {
                 let topic = Result.bind (Json.deserializeEx<Topic.Response> S.jsonConfig >> Ok) json
                 return topic 
         } |> Job.toAsync
+
+    member this.Topics (parameters: Topics.Parameters) : Async<Result<Topics.Response, Set<string>>> =
+        job {
+            match parameters.Validate () with
+            | Error errors ->
+                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+            | Ok validatedParameters ->
+                let request : TRequest =
+                    this.CreateRequest this.Endpoints.Topics
+                    |> Client.AddOptionalQueryString "num_deviations_per_topic" (Option.map string validatedParameters.NumDeviationsPerTopic)
+                    |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
+                    |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
+                    |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
+                let! json = this.RunRequestJob request
+                let topics = Result.bind (Json.deserializeEx<Topics.Response> S.jsonConfig >> Ok) json
+                return topics 
+        } |> Job.toAsync
+
+        
 
