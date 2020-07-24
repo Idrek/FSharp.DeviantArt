@@ -115,7 +115,7 @@ type Client = {
             return client              
         } |> Job.toAsync
 
-    static member Create (clientId: int) (clientSecret: string) =
+    static member Create (clientId: int) (clientSecret: string) : Async<Result<Client, FailureTokenResponse>> =
         let dependencies : Dependencies = { 
             TryGetResponse = C.tryGetResponse
             ReadBodyAsString = MResponse.readBodyAsString
