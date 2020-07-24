@@ -155,7 +155,7 @@ type Client = {
             return categories
         } |> Job.toAsync 
 
-    member this.DailyDeviations (parameters: Daily.Parameters) : Async<Result<Daily.Response, array<string>>> =
+    member this.DailyDeviations (parameters: Daily.Parameters) : Async<Result<Daily.Response, Set<string>>> =
         let request : TRequest = 
             this.CreateRequest this.Endpoints.DailyDeviations
             |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
