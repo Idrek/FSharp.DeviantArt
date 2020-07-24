@@ -11,6 +11,7 @@ module C = HttpFs.Client
 module Category = DeviantArt.Types.Browse.Category
 module Daily = DeviantArt.Types.Browse.Daily
 module HotDeviations = DeviantArt.Types.Browse.HotDeviations
+module MoreLikeThis = DeviantArt.Types.Browse.MoreLikeThis
 module MRequest = C.Request
 module MResponse = C.Response
 module S = Settings
@@ -186,6 +187,24 @@ type Client = {
                 return deviations
         } |> Job.toAsync
 
-
+    member this.MoreLikeThis (parameters: MoreLikeThis.Parameters) : Async<Result<MoreLikeThis.Response, Set<string>>> =
+        job {
+            match parameters.Validate () with
+            | Error errors ->
+                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+            | Ok validatedParameters ->
+                let request : TRequest =
+                    this.CreateRequest this.Endpoints.MoreLikeThis
+                    |> Client.AddQueryString "seed" (string validatedParameters.Seed)
+                    |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
+                    |> Client.AddOptionalQueryString "category_path" validatedParameters.CategoryPath
+                    |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
+                    |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
+                let! json = this.RunRequestJob request
+                let deviations = Result.bind (Json.deserializeEx<MoreLikeThis.Response> S.jsonConfig >> Ok) json
+                return deviations                
+        } |> Job.toAsync
 
         
+
+
