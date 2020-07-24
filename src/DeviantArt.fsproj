@@ -7,6 +7,7 @@
   <ItemGroup>
     <Compile Include="Rules.fs" />
     <Compile Include="Types/Deviation.fs" />
+    <Compile Include="Types/Browse/Popular.fs" />
     <Compile Include="Types/Browse/Newest.fs" />
     <Compile Include="Types/Browse/MoreLikeThisPreview.fs" />
     <Compile Include="Types/Browse/MoreLikeThis.fs" />
