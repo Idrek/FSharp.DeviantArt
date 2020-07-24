@@ -10,6 +10,7 @@ open Hopac
 module C = HttpFs.Client
 module Category = DeviantArt.Types.Browse.Category
 module Daily = DeviantArt.Types.Browse.Daily
+module FolderId = DeviantArt.Types.Collections.FolderId
 module HotDeviations = DeviantArt.Types.Browse.HotDeviations
 module MoreLikeThis = DeviantArt.Types.Browse.MoreLikeThis
 module MoreLikeThisPreview = DeviantArt.Types.Browse.MoreLikeThisPreview
@@ -372,6 +373,26 @@ type Client = {
                 let! json = this.RunRequestJob request
                 let userJournals = Result.bind (Json.deserializeEx<UserJournals.Response> S.jsonConfig >> Ok) json
                 return userJournals                
+        } |> Job.toAsync
+
+    member this.CollectionsFolderId 
+            (parameters: FolderId.Parameters)
+            : Async<Result<FolderId.Response, Set<string>>> =
+        job {
+            match parameters.Validate () with
+            | Error errors ->
+                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+            | Ok validatedParameters ->
+                let request : TRequest =
+                    this.CreateRequest (validatedParameters.Folderid |> string |> this.Endpoints.CollectionsFolderId)
+                    |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
+                    |> Client.AddOptionalQueryString "username" validatedParameters.Username
+                    |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
+                    |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
+                let! json = this.RunRequestJob request
+                let collectionsFolderId = 
+                    Result.bind (Json.deserializeEx<FolderId.Response> S.jsonConfig >> Ok) json
+                return collectionsFolderId                
         } |> Job.toAsync
 
 
