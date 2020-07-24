@@ -24,6 +24,7 @@ module TagsSearch = DeviantArt.Types.Browse.TagsSearch
 module Topic = DeviantArt.Types.Browse.Topic
 module Topics = DeviantArt.Types.Browse.Topics
 module TopTopics = DeviantArt.Types.Browse.TopTopics
+module Undiscovered = DeviantArt.Types.Browse.Undiscovered
 
 // ---------------------------------
 // Type aliases
@@ -337,5 +338,21 @@ type Client = {
             return topTopics
         } |> Job.toAsync
 
-
+    member this.Undiscovered (parameters: Undiscovered.Parameters) : Async<Result<Undiscovered.Response, Set<string>>> =
+        job {
+            match parameters.Validate () with
+            | Error errors ->
+                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+            | Ok validatedParameters ->
+                let request : TRequest =
+                    this.CreateRequest this.Endpoints.Undiscovered
+                    |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
+                    |> Client.AddOptionalQueryString "category_path" validatedParameters.CategoryPath
+                    |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
+                    |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
+                let! json = this.RunRequestJob request
+                let undiscovered = Result.bind (Json.deserializeEx<Undiscovered.Response> S.jsonConfig >> Ok) json
+                return undiscovered
+        } |> Job.toAsync
+        
 
