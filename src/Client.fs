@@ -9,6 +9,7 @@ open Hopac
 
 module C = HttpFs.Client
 module Category = DeviantArt.Types.Browse.Category
+module Countries = DeviantArt.Types.Data.Countries
 module Daily = DeviantArt.Types.Browse.Daily
 module DeviationComments = DeviantArt.Types.Comments.Deviation
 module FolderId = DeviantArt.Types.Collections.FolderId
@@ -505,4 +506,14 @@ type Client = {
                 return comments
         } |> Job.toAsync
 
+    member this.Countries (parameters: Countries.Parameters) : Async<Result<Countries.Response, Set<string>>> =
+        let request : TRequest = 
+            this.CreateRequest this.Endpoints.Countries
+            |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
+        job {
+            let! json = this.RunRequestJob request
+            let countries = Result.bind (Json.deserializeEx<Countries.Response> S.jsonConfig >> Ok) json
+            return countries
+        } |> Job.toAsync
 
+        
