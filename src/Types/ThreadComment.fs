@@ -17,8 +17,8 @@ type Guid = System.Guid
 // ---------------------------------
 
 type ThreadComment = {
-    CommentId: Option<Guid>
-    ParentId: Option<Guid>
+    Commentid: Option<Guid>
+    Parentid: Option<Guid>
     Posted: string
     Replies: int
     Hidden: Option<string>
