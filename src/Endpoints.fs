@@ -24,6 +24,7 @@ type Endpoints = {
     Countries: string
     Privacy: string
     Submission: string
+    Tos: string
 } with
     static member WithDefaults () : Endpoints =
         let prefix = "https://www.deviantart.com/api/v1/oauth2"
@@ -55,5 +56,6 @@ type Endpoints = {
             Countries = sprintf "%s/%s/countries" prefix data
             Privacy = sprintf "%s/%s/privacy" prefix data
             Submission = sprintf "%s/%s/submission" prefix data
+            Tos = sprintf "%s/%s/tos" prefix data
         }
 
