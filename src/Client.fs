@@ -10,6 +10,7 @@ open Hopac
 module C = HttpFs.Client
 module Category = DeviantArt.Types.Browse.Category
 module Daily = DeviantArt.Types.Browse.Daily
+module DeviationComments = DeviantArt.Types.Comments.Deviation
 module FolderId = DeviantArt.Types.Collections.FolderId
 module Folders = DeviantArt.Types.Collections.Folders
 module HotDeviations = DeviantArt.Types.Browse.HotDeviations
@@ -437,6 +438,27 @@ type Client = {
                 let siblings = 
                     Result.bind (Json.deserializeEx<Siblings.Response> S.jsonConfig >> Ok) json
                 return siblings
+        } |> Job.toAsync
+
+    member this.DeviationComments
+            (parameters: DeviationComments.Parameters)
+            : Async<Result<DeviationComments.Response, Set<string>>> =
+        job {
+            match parameters.Validate() with
+            | Error errors ->
+                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+            | Ok validatedParameters ->
+                let request : TRequest =
+                    this.CreateRequest (validatedParameters.DeviationId |> string |> this.Endpoints.DeviationComments)
+                    |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
+                    |> Client.AddOptionalQueryString "commentid" (Option.map string validatedParameters.CommentId)
+                    |> Client.AddOptionalQueryString "maxdepth" (Option.map string validatedParameters.MaxDepth)
+                    |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
+                    |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
+                let! json = this.RunRequestJob request
+                let comments =
+                    Result.bind (Json.deserializeEx<DeviationComments.Response> S.jsonConfig >> Ok) json
+                return comments
         } |> Job.toAsync
 
 
