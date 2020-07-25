@@ -18,6 +18,7 @@ type Endpoints = {
     CollectionsFolderId: string -> string
     Folders: string
     CommentSiblings: string -> string
+    DeviationComments: string -> string
 } with
     static member WithDefaults () : Endpoints =
         let prefix = "https://www.deviantart.com/api/v1/oauth2"
@@ -42,5 +43,6 @@ type Endpoints = {
             CollectionsFolderId = sprintf "%s/%s/%s" prefix collections
             Folders = sprintf "%s/%s/folders" prefix collections
             CommentSiblings = sprintf "%s/%s/%s/siblings" prefix comments
+            DeviationComments = sprintf "%s/%s/deviation/%s" prefix comments
         }
 
