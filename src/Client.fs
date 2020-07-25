@@ -33,6 +33,7 @@ module TagsSearch = DeviantArt.Types.Browse.TagsSearch
 module Topic = DeviantArt.Types.Browse.Topic
 module Topics = DeviantArt.Types.Browse.Topics
 module TopTopics = DeviantArt.Types.Browse.TopTopics
+module Tos = DeviantArt.Types.Data.Tos
 module Undiscovered = DeviantArt.Types.Browse.Undiscovered
 module UserJournals = DeviantArt.Types.Browse.UserJournals
 
@@ -537,6 +538,17 @@ type Client = {
             let submission = Result.bind (Json.deserializeEx<Submission.Response> S.jsonConfig >> Ok) json
             return submission
         } |> Job.toAsync
+
+    member this.Tos (parameters: Tos.Parameters) : Async<Result<Tos.Response, Set<string>>> =
+        let request : TRequest = 
+            this.CreateRequest this.Endpoints.Tos
+            |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
+        job {
+            let! json = this.RunRequestJob request
+            let tos = Result.bind (Json.deserializeEx<Tos.Response> S.jsonConfig >> Ok) json
+            return tos
+        } |> Job.toAsync
+
 
 
 
