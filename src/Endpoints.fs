@@ -27,6 +27,7 @@ type Endpoints = {
     Tos: string
     Deviation: string -> string
     Content: string
+    Download: string -> string
 } with
     static member WithDefaults () : Endpoints =
         let prefix = "https://www.deviantart.com/api/v1/oauth2"
@@ -62,5 +63,6 @@ type Endpoints = {
             Tos = sprintf "%s/%s/tos" prefix data
             Deviation = sprintf "%s/%s/%s" prefix deviation
             Content = sprintf "%s/%s/content" prefix deviation
+            Download = sprintf "%s/%s/download/%s" prefix deviation
         }
 
