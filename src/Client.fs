@@ -20,6 +20,7 @@ module MRequest = C.Request
 module MResponse = C.Response
 module Newest = DeviantArt.Types.Browse.Newest
 module Popular = DeviantArt.Types.Browse.Popular
+module ProfileComments = DeviantArt.Types.Comments.Profile
 module S = Settings
 module Siblings = DeviantArt.Types.Comments.Siblings
 module T = Validator.Types
@@ -458,6 +459,27 @@ type Client = {
                 let! json = this.RunRequestJob request
                 let comments =
                     Result.bind (Json.deserializeEx<DeviationComments.Response> S.jsonConfig >> Ok) json
+                return comments
+        } |> Job.toAsync
+
+    member this.ProfileComments
+            (parameters: ProfileComments.Parameters)
+            : Async<Result<ProfileComments.Response, Set<string>>> =
+        job {
+            match parameters.Validate() with
+            | Error errors ->
+                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+            | Ok validatedParameters ->
+                let request : TRequest =
+                    this.CreateRequest (validatedParameters.Username |> string |> this.Endpoints.ProfileComments)
+                    |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
+                    |> Client.AddOptionalQueryString "commentid" (Option.map string validatedParameters.CommentId)
+                    |> Client.AddOptionalQueryString "maxdepth" (Option.map string validatedParameters.MaxDepth)
+                    |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
+                    |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
+                let! json = this.RunRequestJob request
+                let comments =
+                    Result.bind (Json.deserializeEx<ProfileComments.Response> S.jsonConfig >> Ok) json
                 return comments
         } |> Job.toAsync
 
