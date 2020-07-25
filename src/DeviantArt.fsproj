@@ -8,6 +8,7 @@
     <Compile Include="Rules.fs" />
     <Compile Include="Types/Deviation.fs" />
     <Compile Include="Types/ThreadComment.fs" />
+    <Compile Include="Types/Comments/Status.fs" />
     <Compile Include="Types/Comments/Profile.fs" />
     <Compile Include="Types/Comments/Deviation.fs" />
     <Compile Include="Types/Comments/Siblings.fs" />
