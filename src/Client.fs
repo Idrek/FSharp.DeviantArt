@@ -21,6 +21,7 @@ module MRequest = C.Request
 module MResponse = C.Response
 module Newest = DeviantArt.Types.Browse.Newest
 module Popular = DeviantArt.Types.Browse.Popular
+module Privacy = DeviantArt.Types.Data.Privacy
 module ProfileComments = DeviantArt.Types.Comments.Profile
 module S = Settings
 module Siblings = DeviantArt.Types.Comments.Siblings
@@ -516,4 +517,14 @@ type Client = {
             return countries
         } |> Job.toAsync
 
-        
+    member this.Privacy (parameters: Privacy.Parameters) : Async<Result<Privacy.Response, Set<string>>> =
+        let request : TRequest = 
+            this.CreateRequest this.Endpoints.Privacy
+            |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
+        job {
+            let! json = this.RunRequestJob request
+            let privacy = Result.bind (Json.deserializeEx<Privacy.Response> S.jsonConfig >> Ok) json
+            return privacy
+        } |> Job.toAsync
+
+
