@@ -26,6 +26,7 @@ module ProfileComments = DeviantArt.Types.Comments.Profile
 module S = Settings
 module Siblings = DeviantArt.Types.Comments.Siblings
 module StatusComments = DeviantArt.Types.Comments.Status
+module Submission = DeviantArt.Types.Data.Submission
 module T = Validator.Types
 module Tags = DeviantArt.Types.Browse.Tags
 module TagsSearch = DeviantArt.Types.Browse.TagsSearch
@@ -526,5 +527,16 @@ type Client = {
             let privacy = Result.bind (Json.deserializeEx<Privacy.Response> S.jsonConfig >> Ok) json
             return privacy
         } |> Job.toAsync
+
+    member this.Submission (parameters: Submission.Parameters) : Async<Result<Submission.Response, Set<string>>> =
+        let request : TRequest = 
+            this.CreateRequest this.Endpoints.Submission
+            |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
+        job {
+            let! json = this.RunRequestJob request
+            let submission = Result.bind (Json.deserializeEx<Submission.Response> S.jsonConfig >> Ok) json
+            return submission
+        } |> Job.toAsync
+
 
 
