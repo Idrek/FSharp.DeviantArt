@@ -11,6 +11,7 @@ module C = HttpFs.Client
 module Category = DeviantArt.Types.Browse.Category
 module Countries = DeviantArt.Types.Data.Countries
 module Daily = DeviantArt.Types.Browse.Daily
+module Deviation = DeviantArt.Types.Deviation.Deviation
 module DeviationComments = DeviantArt.Types.Comments.Deviation
 module FolderId = DeviantArt.Types.Collections.FolderId
 module Folders = DeviantArt.Types.Collections.Folders
@@ -547,6 +548,16 @@ type Client = {
             let! json = this.RunRequestJob request
             let tos = Result.bind (Json.deserializeEx<Tos.Response> S.jsonConfig >> Ok) json
             return tos
+        } |> Job.toAsync
+
+    member this.Deviation (parameters: Deviation.Parameters) : Async<Result<Deviation.Response, Set<string>>> =
+        let request : TRequest = 
+            this.CreateRequest (parameters.DeviationId |> string |> this.Endpoints.Deviation)
+            |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
+        job {
+            let! json = this.RunRequestJob request
+            let deviation = Result.bind (Json.deserializeEx<Deviation.Response> S.jsonConfig >> Ok) json
+            return deviation
         } |> Job.toAsync
 
 
