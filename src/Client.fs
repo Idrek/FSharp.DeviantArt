@@ -14,6 +14,7 @@ module Countries = DeviantArt.Types.Data.Countries
 module Daily = DeviantArt.Types.Browse.Daily
 module Deviation = DeviantArt.Types.Deviation.Deviation
 module DeviationComments = DeviantArt.Types.Comments.Deviation
+module Download = DeviantArt.Types.Deviation.Download
 module FolderId = DeviantArt.Types.Collections.FolderId
 module Folders = DeviantArt.Types.Collections.Folders
 module HotDeviations = DeviantArt.Types.Browse.HotDeviations
@@ -571,6 +572,17 @@ type Client = {
             let content = Result.bind (Json.deserializeEx<Content.Response> S.jsonConfig >> Ok) json
             return content
         } |> Job.toAsync
+
+    member this.Download (parameters: Download.Parameters) : Async<Result<Download.Response, Set<string>>> =
+        let request : TRequest = 
+            this.CreateRequest (parameters.DeviationId |> string |> this.Endpoints.Download)
+            |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
+        job {
+            let! json = this.RunRequestJob request
+            let download = Result.bind (Json.deserializeEx<Download.Response> S.jsonConfig >> Ok) json
+            return download
+        } |> Job.toAsync
+
 
 
 
