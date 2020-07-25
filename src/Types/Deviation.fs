@@ -1,4 +1,4 @@
-module DeviantArt.Types.Deviation
+module DeviantArt.Types.Common.Deviation
 
 // ---------------------------------
 // Module aliases

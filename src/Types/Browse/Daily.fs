@@ -4,7 +4,7 @@ module DeviantArt.Types.Browse.Daily
 // Module aliases
 // ---------------------------------
 
-module D = DeviantArt.Types.Deviation
+module D = DeviantArt.Types.Common.Deviation
 
 // ---------------------------------
 // Types

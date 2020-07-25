@@ -4,7 +4,8 @@ module DeviantArt.Types.Comments.Siblings
 // Module aliases
 // ---------------------------------
 
-module D = DeviantArt.Types.Deviation
+
+module D = DeviantArt.Types.Common.Deviation
 module R = DeviantArt.Rules
 module T = Validator.Types
 module V = Validator.Api
