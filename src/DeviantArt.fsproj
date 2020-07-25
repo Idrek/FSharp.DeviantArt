@@ -7,6 +7,7 @@
   <ItemGroup>
     <Compile Include="Rules.fs" />
     <Compile Include="Types/Deviation.fs" />
+    <Compile Include="Types/Data/Tos.fs" />
     <Compile Include="Types/Data/Submission.fs" />
     <Compile Include="Types/Data/Privacy.fs" />
     <Compile Include="Types/Data/Countries.fs" />
