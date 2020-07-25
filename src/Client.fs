@@ -15,6 +15,7 @@ module Daily = DeviantArt.Types.Browse.Daily
 module Deviation = DeviantArt.Types.Deviation.Deviation
 module DeviationComments = DeviantArt.Types.Comments.Deviation
 module Download = DeviantArt.Types.Deviation.Download
+module EmbeddedContent = DeviantArt.Types.Deviation.EmbeddedContent
 module FolderId = DeviantArt.Types.Collections.FolderId
 module Folders = DeviantArt.Types.Collections.Folders
 module HotDeviations = DeviantArt.Types.Browse.HotDeviations
@@ -581,6 +582,27 @@ type Client = {
             let! json = this.RunRequestJob request
             let download = Result.bind (Json.deserializeEx<Download.Response> S.jsonConfig >> Ok) json
             return download
+        } |> Job.toAsync
+
+    member this.EmbeddedContent
+            (parameters: EmbeddedContent.Parameters)
+            : Async<Result<EmbeddedContent.Response, Set<string>>> =
+        job {
+            match parameters.Validate() with
+            | Error errors ->
+                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+            | Ok validatedParameters ->
+                let request : TRequest =
+                    this.CreateRequest this.Endpoints.EmbeddedContent
+                    |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
+                    |> Client.AddQueryString "deviationid" (string parameters.DeviationId)
+                    |> Client.AddOptionalQueryString "offset_deviationid" (Option.map string validatedParameters.OffsetDeviationId)
+                    |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
+                    |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
+                let! json = this.RunRequestJob request
+                let embeddedContent =
+                    Result.bind (Json.deserializeEx<EmbeddedContent.Response> S.jsonConfig >> Ok) json
+                return embeddedContent
         } |> Job.toAsync
 
 
