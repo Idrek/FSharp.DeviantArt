@@ -4,7 +4,6 @@ module DeviantArt.Types.Comments.Siblings
 // Module aliases
 // ---------------------------------
 
-module C = DeviantArt.Types.Common
 module D = DeviantArt.Types.Deviation
 module R = DeviantArt.Rules
 module T = Validator.Types
@@ -15,6 +14,7 @@ module V = Validator.Api
 // ---------------------------------
 
 type Guid = System.Guid
+type ThreadComment = DeviantArt.Types.Common.ThreadComment.ThreadComment
 
 // ---------------------------------
 // Types
@@ -78,7 +78,7 @@ type Response = {
     NextOffset: Option<int>
     HasLess: Option<bool>
     PrevOffset: Option<int>
-    Thread: array<C.ThreadComment>
+    Thread: array<ThreadComment>
     Context: Option<array<Context>>
 }
 

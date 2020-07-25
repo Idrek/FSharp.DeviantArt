@@ -13,7 +13,7 @@ module V = Validator.Api
 // ---------------------------------
 
 type Guid = System.Guid
-type ThreadComment = DeviantArt.Types.Common.ThreadComment
+type ThreadComment = DeviantArt.Types.Common.ThreadComment.ThreadComment
 
 // ---------------------------------
 // Types

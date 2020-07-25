@@ -1,4 +1,4 @@
-module DeviantArt.Types.Common
+module DeviantArt.Types.Common.ThreadComment
 
 // ---------------------------------
 // Module aliases
