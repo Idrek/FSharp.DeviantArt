@@ -20,6 +20,7 @@ module MResponse = C.Response
 module Newest = DeviantArt.Types.Browse.Newest
 module Popular = DeviantArt.Types.Browse.Popular
 module S = Settings
+module Siblings = DeviantArt.Types.Comments.Siblings
 module T = Validator.Types
 module Tags = DeviantArt.Types.Browse.Tags
 module TagsSearch = DeviantArt.Types.Browse.TagsSearch
@@ -416,6 +417,26 @@ type Client = {
                 let folders = 
                     Result.bind (Json.deserializeEx<Folders.Response> S.jsonConfig >> Ok) json
                 return folders                                
+        } |> Job.toAsync
+
+    member this.CommentSiblings
+            (parameters: Siblings.Parameters)
+            : Async<Result<Siblings.Response, Set<string>>> =
+        job {
+            match parameters.Validate() with
+            | Error errors ->
+                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+            | Ok validatedParameters ->
+                let request : TRequest =
+                    this.CreateRequest (validatedParameters.CommentId |> string |> this.Endpoints.CommentSiblings)
+                    |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
+                    |> Client.AddOptionalQueryString "ext_item" (Option.map string validatedParameters.ExtItem)
+                    |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
+                    |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
+                let! json = this.RunRequestJob request
+                let siblings = 
+                    Result.bind (Json.deserializeEx<Siblings.Response> S.jsonConfig >> Ok) json
+                return siblings
         } |> Job.toAsync
 
 
