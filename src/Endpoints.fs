@@ -30,6 +30,7 @@ type Endpoints = {
     Download: string -> string
     EmbeddedContent: string
     Metadata: string
+    WhoFaved: string
 } with
     static member WithDefaults () : Endpoints =
         let prefix = "https://www.deviantart.com/api/v1/oauth2"
@@ -68,5 +69,6 @@ type Endpoints = {
             Download = sprintf "%s/%s/download/%s" prefix deviation
             EmbeddedContent = sprintf "%s/%s/embeddedcontent" prefix deviation
             Metadata = sprintf "%s/%s/metadata" prefix deviation
+            WhoFaved = sprintf "%s/%s/whofaved" prefix deviation
         }
 
