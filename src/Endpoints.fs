@@ -33,6 +33,7 @@ type Endpoints = {
     WhoFaved: string
     GalleryFolderId: string -> string
     GalleryAll: string
+    GalleryFolders: string
 } with
     static member WithDefaults () : Endpoints =
         let prefix = "https://www.deviantart.com/api/v1/oauth2"
@@ -75,5 +76,6 @@ type Endpoints = {
             WhoFaved = sprintf "%s/%s/whofaved" prefix deviation
             GalleryFolderId = sprintf "%s/%s/%s" prefix gallery
             GalleryAll = sprintf "%s/%s/all" prefix gallery
+            GalleryFolders = sprintf "%s/%s/folders" prefix gallery
         }
 
