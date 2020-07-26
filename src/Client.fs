@@ -157,6 +157,14 @@ type Client = {
         | None -> request
         | Some v -> Client.AddQueryString name v request
 
+    static member AddMultipleValueQueryString 
+            (name: string) 
+            (values: seq<string>) 
+            (request: TRequest) 
+            : TRequest =
+        (request, values) 
+        ||> Seq.fold (fun request value -> Client.AddQueryString name value request)
+
     member this.RunRequestJob (request: TRequest) : Job<Result<string, Set<string>>> = 
         job {
             try 
