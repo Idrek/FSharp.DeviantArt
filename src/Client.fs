@@ -41,6 +41,7 @@ module TopTopics = DeviantArt.Types.Browse.TopTopics
 module Tos = DeviantArt.Types.Data.Tos
 module Undiscovered = DeviantArt.Types.Browse.Undiscovered
 module UserJournals = DeviantArt.Types.Browse.UserJournals
+module WhoFaved = DeviantArt.Types.Deviation.WhoFaved
 
 // ---------------------------------
 // Type aliases
@@ -632,6 +633,24 @@ type Client = {
                 let metadata =
                     Result.bind (Json.deserializeEx<Metadata.Response> S.jsonConfig >> Ok) json
                 return metadata
+        } |> Job.toAsync
+
+    member this.WhoFaved (parameters: WhoFaved.Parameters) : Async<Result<WhoFaved.Response, Set<string>>> =
+        job {
+            match parameters.Validate() with
+            | Error errors ->
+                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+            | Ok validatedParameters ->
+                let request : TRequest =
+                    this.CreateRequest this.Endpoints.WhoFaved
+                    |> Client.AddQueryString "deviationid" (string parameters.DeviationId)
+                    |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
+                    |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
+                    |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
+                let! json = this.RunRequestJob request
+                let whoFaved =
+                    Result.bind (Json.deserializeEx<WhoFaved.Response> S.jsonConfig >> Ok) json
+                return whoFaved
         } |> Job.toAsync
 
 
