@@ -19,6 +19,7 @@ module EmbeddedContent = DeviantArt.Types.Deviation.EmbeddedContent
 module FolderId = DeviantArt.Types.Collections.FolderId
 module Folders = DeviantArt.Types.Collections.Folders
 module HotDeviations = DeviantArt.Types.Browse.HotDeviations
+module Metadata = DeviantArt.Types.Deviation.Metadata
 module MoreLikeThis = DeviantArt.Types.Browse.MoreLikeThis
 module MoreLikeThisPreview = DeviantArt.Types.Browse.MoreLikeThisPreview
 module MRequest = C.Request
@@ -612,6 +613,27 @@ type Client = {
                     Result.bind (Json.deserializeEx<EmbeddedContent.Response> S.jsonConfig >> Ok) json
                 return embeddedContent
         } |> Job.toAsync
+
+    member this.Metadata (parameters: Metadata.Parameters) : Async<Result<Metadata.Response, Set<string>>> =
+        job {
+            match parameters.Validate() with
+            | Error errors ->
+                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+            | Ok validatedParameters ->
+                let request : TRequest =
+                    this.CreateRequest this.Endpoints.Metadata
+                    |> Client.AddMultipleValueQueryString "deviationids" (Seq.map string validatedParameters.DeviationIds)
+                    |> Client.AddOptionalQueryString "ext_submission" (Option.map string validatedParameters.ExtSubmission)
+                    |> Client.AddOptionalQueryString "ext_camera" (Option.map string validatedParameters.ExtCamera)
+                    |> Client.AddOptionalQueryString "ext_stats" (Option.map string validatedParameters.ExtStats)
+                    |> Client.AddOptionalQueryString "ext_collection" (Option.map string validatedParameters.ExtCollection)
+                    |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
+                let! json = this.RunRequestJob request
+                let metadata =
+                    Result.bind (Json.deserializeEx<Metadata.Response> S.jsonConfig >> Ok) json
+                return metadata
+        } |> Job.toAsync
+
 
 
 
