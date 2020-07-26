@@ -7,6 +7,7 @@
   <ItemGroup>
     <Compile Include="Rules.fs" />
     <Compile Include="Types/Deviation.fs" />
+    <Compile Include="Types/Gallery/FolderId.fs" />
     <Compile Include="Types/Deviation/WhoFaved.fs" />
     <Compile Include="Types/Deviation/Metadata.fs" />
     <Compile Include="Types/Deviation/EmbeddedContent.fs" />
