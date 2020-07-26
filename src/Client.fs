@@ -18,6 +18,7 @@ module Download = DeviantArt.Types.Deviation.Download
 module EmbeddedContent = DeviantArt.Types.Deviation.EmbeddedContent
 module FolderId = DeviantArt.Types.Collections.FolderId
 module Folders = DeviantArt.Types.Collections.Folders
+module GalleryFolderId = DeviantArt.Types.Gallery.FolderId
 module HotDeviations = DeviantArt.Types.Browse.HotDeviations
 module Metadata = DeviantArt.Types.Deviation.Metadata
 module MoreLikeThis = DeviantArt.Types.Browse.MoreLikeThis
@@ -651,6 +652,31 @@ type Client = {
                 let whoFaved =
                     Result.bind (Json.deserializeEx<WhoFaved.Response> S.jsonConfig >> Ok) json
                 return whoFaved
+        } |> Job.toAsync
+
+    member this.GalleryFolderId 
+            (parameters: GalleryFolderId.Parameters)
+            : Async<Result<GalleryFolderId.Response, Set<string>>> =
+        job {
+            match parameters.Validate() with
+            | Error errors ->
+                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+            | Ok validatedParameters ->
+                let request : TRequest =
+                    this.CreateRequest (
+                        Option.map string parameters.FolderId 
+                        |> Option.defaultValue String.Empty 
+                        |> this.Endpoints.GalleryFolderId)
+                    |> Client.AddOptionalQueryString "username" validatedParameters.Username
+                    |> Client.AddOptionalQueryString "mode" 
+                        (Option.map (fun m -> m.ToString()) validatedParameters.Mode)
+                    |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
+                    |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
+                    |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
+                let! json = this.RunRequestJob request
+                let folderId =
+                    Result.bind (Json.deserializeEx<GalleryFolderId.Response> S.jsonConfig >> Ok) json
+                return folderId
         } |> Job.toAsync
 
 
