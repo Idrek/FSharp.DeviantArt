@@ -615,11 +615,15 @@ type Client = {
 
     member this.StatusComments
             (parameters: StatusComments.Parameters)
-            : Async<Result<StatusComments.Response, Set<string>>> =
+            : Async<Result<StatusComments.Response, ErrorClient>> =
         job {
             match parameters.Validate() with
             | Error errors ->
-                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+                return
+                    errors 
+                    |> Set.map ErrorValidation.OfValidator 
+                    |> ErrorClient.ParametersValidation
+                    |> Error
             | Ok validatedParameters ->
                 let request : TRequest =
                     this.CreateRequest (validatedParameters.StatusId |> string |> this.Endpoints.ProfileComments)
@@ -628,8 +632,8 @@ type Client = {
                     |> Client.AddOptionalQueryString "maxdepth" (Option.map string validatedParameters.MaxDepth)
                     |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
                     |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
-                let! json = this.RunRequestJob request
-                let comments =
+                let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+                let comments : Result<StatusComments.Response, ErrorClient> =
                     Result.bind (Json.deserializeEx<StatusComments.Response> S.jsonConfig >> Ok) json
                 return comments
         } |> Job.toAsync
