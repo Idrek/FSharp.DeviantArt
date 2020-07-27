@@ -651,13 +651,16 @@ type Client = {
             return countries
         } |> Job.toAsync
 
-    member this.Privacy (parameters: Privacy.Parameters) : Async<Result<Privacy.Response, Set<string>>> =
+    member this.Privacy 
+            (parameters: Privacy.Parameters) 
+            : Async<Result<Privacy.Response, ErrorClient>> =
         let request : TRequest = 
             this.CreateRequest this.Endpoints.Privacy
             |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
         job {
-            let! json = this.RunRequestJob request
-            let privacy = Result.bind (Json.deserializeEx<Privacy.Response> S.jsonConfig >> Ok) json
+            let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+            let privacy : Result<Privacy.Response, ErrorClient> = 
+                Result.bind (Json.deserializeEx<Privacy.Response> S.jsonConfig >> Ok) json
             return privacy
         } |> Job.toAsync
 
