@@ -7,6 +7,10 @@
   <ItemGroup>
     <Compile Include="Rules.fs" />
     <Compile Include="Types/Deviation.fs" />
+    <Compile Include="Types/Errors/ServerResponse.fs" />
+    <Compile Include="Types/Errors/Exception.fs" />
+    <Compile Include="Types/Errors/Validation.fs" />
+    <Compile Include="Types/Errors/Client.fs" />
     <Compile Include="Types/Gallery/Folders.fs" />
     <Compile Include="Types/Gallery/All.fs" />
     <Compile Include="Types/Gallery/FolderId.fs" />
