@@ -717,13 +717,16 @@ type Client = {
             return content
         } |> Job.toAsync
 
-    member this.Download (parameters: Download.Parameters) : Async<Result<Download.Response, Set<string>>> =
+    member this.Download 
+            (parameters: Download.Parameters) 
+            : Async<Result<Download.Response, ErrorClient>> =
         let request : TRequest = 
             this.CreateRequest (parameters.DeviationId |> string |> this.Endpoints.Download)
             |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
         job {
-            let! json = this.RunRequestJob request
-            let download = Result.bind (Json.deserializeEx<Download.Response> S.jsonConfig >> Ok) json
+            let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+            let download : Result<Download.Response, ErrorClient> = 
+                Result.bind (Json.deserializeEx<Download.Response> S.jsonConfig >> Ok) json
             return download
         } |> Job.toAsync
 
