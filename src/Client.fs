@@ -198,14 +198,16 @@ type Client = {
                 return result
         }
 
-    member this.CategoryTree (parameters: Category.Parameters) : Async<Result<Category.Response, Set<string>>> =
+    member this.CategoryTree 
+            (parameters: Category.Parameters) 
+            : Async<Result<Category.Response, ErrorClient>> =
         let request : TRequest = 
             this.CreateRequest this.Endpoints.CategoryTree 
             |> Client.AddQueryString "catpath" parameters.CategoryPath
             |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
         job {
-            let! json = this.RunRequestJob request
-            let categories = 
+            let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+            let categories : Result<Category.Response, ErrorClient> = 
                 Result.bind (Json.deserializeEx<Category.Response> S.jsonConfig >> Ok) json
             return categories
         } |> Job.toAsync 
