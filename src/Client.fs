@@ -250,11 +250,17 @@ type Client = {
                 return deviations
         } |> Job.toAsync
 
-    member this.MoreLikeThis (parameters: MoreLikeThis.Parameters) : Async<Result<MoreLikeThis.Response, Set<string>>> =
+    member this.MoreLikeThis 
+            (parameters: MoreLikeThis.Parameters) 
+            : Async<Result<MoreLikeThis.Response, ErrorClient>> =
         job {
             match parameters.Validate () with
             | Error errors ->
-                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+                return
+                    errors 
+                    |> Set.map ErrorValidation.OfValidator 
+                    |> ErrorClient.ParametersValidation
+                    |> Error
             | Ok validatedParameters ->
                 let request : TRequest =
                     this.CreateRequest this.Endpoints.MoreLikeThis
@@ -263,8 +269,9 @@ type Client = {
                     |> Client.AddOptionalQueryString "category_path" validatedParameters.CategoryPath
                     |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
                     |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
-                let! json = this.RunRequestJob request
-                let deviations = Result.bind (Json.deserializeEx<MoreLikeThis.Response> S.jsonConfig >> Ok) json
+                let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+                let deviations : Result<MoreLikeThis.Response, ErrorClient> = 
+                    Result.bind (Json.deserializeEx<MoreLikeThis.Response> S.jsonConfig >> Ok) json
                 return deviations                
         } |> Job.toAsync
 
