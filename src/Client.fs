@@ -440,11 +440,17 @@ type Client = {
             return topTopics
         } |> Job.toAsync
 
-    member this.Undiscovered (parameters: Undiscovered.Parameters) : Async<Result<Undiscovered.Response, Set<string>>> =
+    member this.Undiscovered 
+            (parameters: Undiscovered.Parameters) 
+            : Async<Result<Undiscovered.Response, ErrorClient>> =
         job {
             match parameters.Validate () with
             | Error errors ->
-                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+                return
+                    errors 
+                    |> Set.map ErrorValidation.OfValidator 
+                    |> ErrorClient.ParametersValidation
+                    |> Error
             | Ok validatedParameters ->
                 let request : TRequest =
                     this.CreateRequest this.Endpoints.Undiscovered
@@ -452,8 +458,9 @@ type Client = {
                     |> Client.AddOptionalQueryString "category_path" validatedParameters.CategoryPath
                     |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
                     |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
-                let! json = this.RunRequestJob request
-                let undiscovered = Result.bind (Json.deserializeEx<Undiscovered.Response> S.jsonConfig >> Ok) json
+                let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+                let undiscovered : Result<Undiscovered.Response, ErrorClient> = 
+                    Result.bind (Json.deserializeEx<Undiscovered.Response> S.jsonConfig >> Ok) json
                 return undiscovered
         } |> Job.toAsync
 
