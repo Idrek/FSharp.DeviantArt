@@ -8,6 +8,12 @@ module V = Validator.Api
 module T = Validator.Types
 
 // ---------------------------------
+// Type aliases
+// ---------------------------------
+
+type String = System.String
+
+// ---------------------------------
 // Functions
 // ---------------------------------
 
@@ -26,5 +32,13 @@ let isNotEmptySeq (property: string) : seq<'a> -> T.Validation =
         Code = "isNotEmptySeq"
     }
     V.withFunction invalid (Seq.isEmpty >> not)
+    
+let isNotEmptyString (property: string) : string -> T.Validation =
+    let invalid : T.Invalid = {
+        Message = "String is empty"
+        Property = property
+        Code = "isNotEmptyString"
+    }
+    V.withFunction invalid (String.IsNullOrWhiteSpace >> not)
     
     
