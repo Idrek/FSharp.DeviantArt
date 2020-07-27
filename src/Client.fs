@@ -638,13 +638,16 @@ type Client = {
                 return comments
         } |> Job.toAsync
 
-    member this.Countries (parameters: Countries.Parameters) : Async<Result<Countries.Response, Set<string>>> =
+    member this.Countries 
+            (parameters: Countries.Parameters) 
+            : Async<Result<Countries.Response, ErrorClient>> =
         let request : TRequest = 
             this.CreateRequest this.Endpoints.Countries
             |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
         job {
-            let! json = this.RunRequestJob request
-            let countries = Result.bind (Json.deserializeEx<Countries.Response> S.jsonConfig >> Ok) json
+            let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+            let countries : Result<Countries.Response, ErrorClient> = 
+                Result.bind (Json.deserializeEx<Countries.Response> S.jsonConfig >> Ok) json
             return countries
         } |> Job.toAsync
 
