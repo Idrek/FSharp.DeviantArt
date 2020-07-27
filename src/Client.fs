@@ -212,14 +212,17 @@ type Client = {
             return categories
         } |> Job.toAsync 
 
-    member this.DailyDeviations (parameters: Daily.Parameters) : Async<Result<Daily.Response, Set<string>>> =
+    member this.DailyDeviations 
+            (parameters: Daily.Parameters) 
+            : Async<Result<Daily.Response, ErrorClient>> =
         let request : TRequest = 
             this.CreateRequest this.Endpoints.DailyDeviations
             |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
             |> Client.AddOptionalQueryString "date" parameters.Date
         job {
-            let! json = this.RunRequestJob request
-            let deviations = Result.bind (Json.deserializeEx<Daily.Response> S.jsonConfig >> Ok) json
+            let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+            let deviations : Result<Daily.Response, ErrorClient> = 
+                Result.bind (Json.deserializeEx<Daily.Response> S.jsonConfig >> Ok) json
             return deviations
         } |> Job.toAsync 
 
