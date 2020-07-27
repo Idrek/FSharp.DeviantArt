@@ -732,11 +732,15 @@ type Client = {
 
     member this.EmbeddedContent
             (parameters: EmbeddedContent.Parameters)
-            : Async<Result<EmbeddedContent.Response, Set<string>>> =
+            : Async<Result<EmbeddedContent.Response, ErrorClient>> =
         job {
             match parameters.Validate() with
             | Error errors ->
-                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+                return
+                    errors 
+                    |> Set.map ErrorValidation.OfValidator 
+                    |> ErrorClient.ParametersValidation
+                    |> Error
             | Ok validatedParameters ->
                 let request : TRequest =
                     this.CreateRequest this.Endpoints.EmbeddedContent
@@ -745,8 +749,8 @@ type Client = {
                     |> Client.AddOptionalQueryString "offset_deviationid" (Option.map string validatedParameters.OffsetDeviationId)
                     |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
                     |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
-                let! json = this.RunRequestJob request
-                let embeddedContent =
+                let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+                let embeddedContent : Result<EmbeddedContent.Response, ErrorClient> =
                     Result.bind (Json.deserializeEx<EmbeddedContent.Response> S.jsonConfig >> Ok) json
                 return embeddedContent
         } |> Job.toAsync
