@@ -277,15 +277,15 @@ type Client = {
 
     member this.MoreLikeThisPreview 
             (parameters: MoreLikeThisPreview.Parameters)
-            : Async<Result<MoreLikeThisPreview.Response, Set<string>>> =
+            : Async<Result<MoreLikeThisPreview.Response, ErrorClient>> =
         let request : TRequest =
             this.CreateRequest this.Endpoints.MoreLikeThisPreview
             |> Client.AddQueryString "seed" (string parameters.Seed)
             |> Client.AddQueryString "mature_content" (string parameters.MatureContent)        
         job {
-            let! json = this.RunRequestJob request
-            let moreLikeThisPreview = 
-                json |> Result.bind (Json.deserializeEx<MoreLikeThisPreview.Response> S.jsonConfig >> Ok)
+            let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+            let moreLikeThisPreview : Result<MoreLikeThisPreview.Response, ErrorClient> = 
+                Result.bind (Json.deserializeEx<MoreLikeThisPreview.Response> S.jsonConfig >> Ok) json
             return moreLikeThisPreview            
         } |> Job.toAsync
 
