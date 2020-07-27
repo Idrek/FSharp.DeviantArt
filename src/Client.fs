@@ -365,14 +365,17 @@ type Client = {
                 return tags                
         } |> Job.toAsync
 
-    member this.TagsSearch (parameters: TagsSearch.Parameters) : Async<Result<TagsSearch.Response, Set<string>>> =
+    member this.TagsSearch 
+            (parameters: TagsSearch.Parameters) 
+            : Async<Result<TagsSearch.Response, ErrorClient>> =
         let request : TRequest =
             this.CreateRequest this.Endpoints.TagsSearch
             |> Client.AddQueryString "tag_name" parameters.TagName
             |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
         job {
-            let! json = this.RunRequestJob request
-            let tagsSearch = Result.bind (Json.deserializeEx<TagsSearch.Response> S.jsonConfig >> Ok) json
+            let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+            let tagsSearch : Result<TagsSearch.Response, ErrorClient> = 
+                Result.bind (Json.deserializeEx<TagsSearch.Response> S.jsonConfig >> Ok) json
             return tagsSearch
         } |> Job.toAsync
 
