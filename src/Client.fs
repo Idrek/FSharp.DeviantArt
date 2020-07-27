@@ -664,13 +664,16 @@ type Client = {
             return privacy
         } |> Job.toAsync
 
-    member this.Submission (parameters: Submission.Parameters) : Async<Result<Submission.Response, Set<string>>> =
+    member this.Submission 
+            (parameters: Submission.Parameters) 
+            : Async<Result<Submission.Response, ErrorClient>> =
         let request : TRequest = 
             this.CreateRequest this.Endpoints.Submission
             |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
         job {
-            let! json = this.RunRequestJob request
-            let submission = Result.bind (Json.deserializeEx<Submission.Response> S.jsonConfig >> Ok) json
+            let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+            let submission : Result<Submission.Response, ErrorClient> = 
+                Result.bind (Json.deserializeEx<Submission.Response> S.jsonConfig >> Ok) json
             return submission
         } |> Job.toAsync
 
