@@ -379,11 +379,17 @@ type Client = {
             return tagsSearch
         } |> Job.toAsync
 
-    member this.Topic (parameters: Topic.Parameters) : Async<Result<Topic.Response, Set<string>>> =
+    member this.Topic 
+            (parameters: Topic.Parameters) 
+            : Async<Result<Topic.Response, ErrorClient>> =
         job {
             match parameters.Validate () with
             | Error errors ->
-                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+                return
+                    errors 
+                    |> Set.map ErrorValidation.OfValidator 
+                    |> ErrorClient.ParametersValidation
+                    |> Error
             | Ok validatedParameters ->
                 let request : TRequest =
                     this.CreateRequest this.Endpoints.Topic
@@ -391,8 +397,9 @@ type Client = {
                     |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
                     |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
                     |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
-                let! json = this.RunRequestJob request
-                let topic = Result.bind (Json.deserializeEx<Topic.Response> S.jsonConfig >> Ok) json
+                let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+                let topic : Result<Topic.Response, ErrorClient> = 
+                    Result.bind (Json.deserializeEx<Topic.Response> S.jsonConfig >> Ok) json
                 return topic 
         } |> Job.toAsync
 
