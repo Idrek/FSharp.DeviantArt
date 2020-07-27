@@ -781,11 +781,17 @@ type Client = {
                 return metadata
         } |> Job.toAsync
 
-    member this.WhoFaved (parameters: WhoFaved.Parameters) : Async<Result<WhoFaved.Response, Set<string>>> =
+    member this.WhoFaved 
+            (parameters: WhoFaved.Parameters) 
+            : Async<Result<WhoFaved.Response, ErrorClient>> =
         job {
             match parameters.Validate() with
             | Error errors ->
-                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+                return
+                    errors 
+                    |> Set.map ErrorValidation.OfValidator 
+                    |> ErrorClient.ParametersValidation
+                    |> Error
             | Ok validatedParameters ->
                 let request : TRequest =
                     this.CreateRequest this.Endpoints.WhoFaved
@@ -793,8 +799,8 @@ type Client = {
                     |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
                     |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
                     |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
-                let! json = this.RunRequestJob request
-                let whoFaved =
+                let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+                let whoFaved : Result<WhoFaved.Response, ErrorClient> =
                     Result.bind (Json.deserializeEx<WhoFaved.Response> S.jsonConfig >> Ok) json
                 return whoFaved
         } |> Job.toAsync
