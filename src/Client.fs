@@ -703,14 +703,17 @@ type Client = {
             return deviation
         } |> Job.toAsync
 
-    member this.Content (parameters: Content.Parameters) : Async<Result<Content.Response, Set<string>>> =
+    member this.Content 
+            (parameters: Content.Parameters) 
+            : Async<Result<Content.Response, ErrorClient>> =
         let request : TRequest = 
             this.CreateRequest this.Endpoints.Content
             |> Client.AddQueryString "deviationid" (string parameters.DeviationId)
             |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
         job {
-            let! json = this.RunRequestJob request
-            let content = Result.bind (Json.deserializeEx<Content.Response> S.jsonConfig >> Ok) json
+            let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+            let content : Result<Content.Response, ErrorClient> = 
+                Result.bind (Json.deserializeEx<Content.Response> S.jsonConfig >> Ok) json
             return content
         } |> Job.toAsync
 
