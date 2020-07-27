@@ -314,11 +314,17 @@ type Client = {
                 return newest                
         } |> Job.toAsync
 
-    member this.Popular (parameters: Popular.Parameters) : Async<Result<Popular.Response, Set<string>>> =
+    member this.Popular 
+            (parameters: Popular.Parameters) 
+            : Async<Result<Popular.Response, ErrorClient>> =
         job {
             match parameters.Validate () with
             | Error errors ->
-                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+                return
+                    errors 
+                    |> Set.map ErrorValidation.OfValidator 
+                    |> ErrorClient.ParametersValidation
+                    |> Error
             | Ok validatedParameters ->
                 let request : TRequest =
                     this.CreateRequest this.Endpoints.Popular
@@ -329,8 +335,9 @@ type Client = {
                         (Option.map (fun tr -> tr.ToString()) validatedParameters.Timerange)
                     |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
                     |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
-                let! json = this.RunRequestJob request
-                let popular = Result.bind (Json.deserializeEx<Popular.Response> S.jsonConfig >> Ok) json
+                let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+                let popular : Result<Popular.Response, ErrorClient> = 
+                    Result.bind (Json.deserializeEx<Popular.Response> S.jsonConfig >> Ok) json
                 return popular                
         } |> Job.toAsync
 
