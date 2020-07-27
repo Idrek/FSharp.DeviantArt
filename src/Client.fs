@@ -427,13 +427,16 @@ type Client = {
                 return topics 
         } |> Job.toAsync
 
-    member this.TopTopics (parameters: TopTopics.Parameters) : Async<Result<TopTopics.Response, Set<string>>> =
+    member this.TopTopics 
+            (parameters: TopTopics.Parameters) 
+            : Async<Result<TopTopics.Response, ErrorClient>> =
         let request : TRequest = 
             this.CreateRequest this.Endpoints.TopTopics
             |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
         job {
-            let! json = this.RunRequestJob request
-            let topTopics = Result.bind (Json.deserializeEx<TopTopics.Response> S.jsonConfig >> Ok) json
+            let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+            let topTopics : Result<TopTopics.Response, ErrorClient> = 
+                Result.bind (Json.deserializeEx<TopTopics.Response> S.jsonConfig >> Ok) json
             return topTopics
         } |> Job.toAsync
 
