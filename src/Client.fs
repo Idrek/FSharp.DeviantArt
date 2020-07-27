@@ -836,11 +836,15 @@ type Client = {
 
     member this.GalleryAll 
             (parameters: GalleryAll.Parameters)
-            : Async<Result<GalleryAll.Response, Set<string>>> =
+            : Async<Result<GalleryAll.Response, ErrorClient>> =
         job {
             match parameters.Validate() with
             | Error errors ->
-                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+                return
+                    errors 
+                    |> Set.map ErrorValidation.OfValidator 
+                    |> ErrorClient.ParametersValidation
+                    |> Error
             | Ok validatedParameters ->
                 let request : TRequest =
                     this.CreateRequest this.Endpoints.GalleryAll
@@ -848,8 +852,8 @@ type Client = {
                     |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
                     |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
                     |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
-                let! json = this.RunRequestJob request
-                let all =
+                let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+                let all : Result<GalleryAll.Response, ErrorClient> =
                     Result.bind (Json.deserializeEx<GalleryAll.Response> S.jsonConfig >> Ok) json
                 return all
         } |> Job.toAsync
