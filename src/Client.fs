@@ -44,6 +44,7 @@ module TopTopics = DeviantArt.Types.Browse.TopTopics
 module Tos = DeviantArt.Types.Data.Tos
 module Undiscovered = DeviantArt.Types.Browse.Undiscovered
 module UserFriends = DeviantArt.Types.User.Friends
+module UserFriendsSearch = DeviantArt.Types.User.FriendsSearch
 module UserJournals = DeviantArt.Types.Browse.UserJournals
 module WhoFaved = DeviantArt.Types.Deviation.WhoFaved
 
@@ -907,7 +908,31 @@ type Client = {
                     Result.bind (Json.deserializeEx<UserFriends.Response> S.jsonConfig >> Ok) json
                 return friends
         } |> Job.toAsync
-        
+
+    member this.UserFriendsSearch
+            (parameters: UserFriendsSearch.Parameters)
+            : Async<Result<UserFriendsSearch.Response, ErrorClient>> =
+        job {
+            match parameters.Validate() with
+            | Error errors ->
+                return
+                    errors 
+                    |> Set.map ErrorValidation.OfValidator 
+                    |> ErrorClient.ParametersValidation
+                    |> Error
+            | Ok validatedParameters ->
+                let request : TRequest =
+                    this.CreateRequest this.Endpoints.UserFriendsSearch
+                    |> Client.AddQueryString "username" validatedParameters.Username
+                    |> Client.AddQueryString "query" validatedParameters.Query
+                    |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
+                let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+                let friends : Result<UserFriendsSearch.Response, ErrorClient> =
+                    Result.bind (Json.deserializeEx<UserFriendsSearch.Response> S.jsonConfig >> Ok) json
+                return friends
+        } |> Job.toAsync
+
+
 
 
 
