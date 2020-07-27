@@ -50,6 +50,12 @@ module WhoFaved = DeviantArt.Types.Deviation.WhoFaved
 // Type aliases
 // ---------------------------------
 
+type ErrorClient = DeviantArt.Types.Errors.Client
+type ErrorException = DeviantArt.Types.Errors.Exception
+type ErrorServerResponse = DeviantArt.Types.Errors.ServerResponse
+type ErrorValidation = DeviantArt.Types.Errors.Validation
+type StreamReader = System.IO.StreamReader
+
 // ---------------------------------
 // Functions
 // ---------------------------------
@@ -170,16 +176,25 @@ type Client = {
         (request, values) 
         ||> Seq.fold (fun request value -> Client.AddQueryString name value request)
 
-    member this.RunRequestJob (request: TRequest) : Job<Result<string, Set<string>>> = 
+    member this.RunRequestJob (request: TRequest) : Job<Result<string, ErrorClient>> = 
         job {
             try 
                 use! response = this.Dependencies.GetResponse request
-                let! bodyJson = this.Dependencies.ReadBodyAsString response
-                let result = Ok bodyJson
-                return result
+                match response.statusCode with
+                | statusCode when statusCode < 400 -> 
+                    let! bodyJson = this.Dependencies.ReadBodyAsString response
+                    let result = Ok bodyJson
+                    return result
+                | _ -> 
+                    use reader : StreamReader = new StreamReader(response.body)
+                    let body : string = reader.ReadToEnd()
+                    let error = Json.deserializeEx<ErrorServerResponse> S.jsonConfig body
+                    let result = Error (ErrorClient.ServerResponse error)
+                    return result
             with
             | e ->
-                let result = Error (Set [|e.Message|])
+                let ex : ErrorException = { Name = e.GetType().ToString(); Message = e.Message }
+                let result = Error (ErrorClient.Exception ex)
                 return result
         }
 
