@@ -515,11 +515,15 @@ type Client = {
 
     member this.Folders 
             (parameters: Folders.Parameters)
-            : Async<Result<Folders.Response, Set<string>>> =
+            : Async<Result<Folders.Response, ErrorClient>> =
         job {
             match parameters.Validate() with
             | Error errors ->
-                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+                return
+                    errors 
+                    |> Set.map ErrorValidation.OfValidator 
+                    |> ErrorClient.ParametersValidation
+                    |> Error
             | Ok validatedParameters ->
                 let request : TRequest =
                     this.CreateRequest this.Endpoints.Folders
@@ -529,8 +533,8 @@ type Client = {
                     |> Client.AddOptionalQueryString "ext_preload" (Option.map string validatedParameters.ExtPreload)
                     |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
                     |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
-                let! json = this.RunRequestJob request
-                let folders = 
+                let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+                let folders : Result<Folders.Response, ErrorClient> = 
                     Result.bind (Json.deserializeEx<Folders.Response> S.jsonConfig >> Ok) json
                 return folders                                
         } |> Job.toAsync
