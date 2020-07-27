@@ -755,11 +755,17 @@ type Client = {
                 return embeddedContent
         } |> Job.toAsync
 
-    member this.Metadata (parameters: Metadata.Parameters) : Async<Result<Metadata.Response, Set<string>>> =
+    member this.Metadata 
+            (parameters: Metadata.Parameters) 
+            : Async<Result<Metadata.Response, ErrorClient>> =
         job {
             match parameters.Validate() with
             | Error errors ->
-                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+                return
+                    errors 
+                    |> Set.map ErrorValidation.OfValidator 
+                    |> ErrorClient.ParametersValidation
+                    |> Error
             | Ok validatedParameters ->
                 let request : TRequest =
                     this.CreateRequest this.Endpoints.Metadata
@@ -769,8 +775,8 @@ type Client = {
                     |> Client.AddOptionalQueryString "ext_stats" (Option.map string validatedParameters.ExtStats)
                     |> Client.AddOptionalQueryString "ext_collection" (Option.map string validatedParameters.ExtCollection)
                     |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
-                let! json = this.RunRequestJob request
-                let metadata =
+                let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+                let metadata : Result<Metadata.Response, ErrorClient> =
                     Result.bind (Json.deserializeEx<Metadata.Response> S.jsonConfig >> Ok) json
                 return metadata
         } |> Job.toAsync
