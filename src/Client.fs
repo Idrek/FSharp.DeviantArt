@@ -541,11 +541,15 @@ type Client = {
 
     member this.CommentSiblings
             (parameters: Siblings.Parameters)
-            : Async<Result<Siblings.Response, Set<string>>> =
+            : Async<Result<Siblings.Response, ErrorClient>> =
         job {
             match parameters.Validate() with
             | Error errors ->
-                return (errors |> Set.map (fun (error: T.Invalid) -> error.Message) |> Error)
+                return
+                    errors 
+                    |> Set.map ErrorValidation.OfValidator 
+                    |> ErrorClient.ParametersValidation
+                    |> Error
             | Ok validatedParameters ->
                 let request : TRequest =
                     this.CreateRequest (validatedParameters.CommentId |> string |> this.Endpoints.CommentSiblings)
@@ -553,8 +557,8 @@ type Client = {
                     |> Client.AddOptionalQueryString "ext_item" (Option.map string validatedParameters.ExtItem)
                     |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
                     |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
-                let! json = this.RunRequestJob request
-                let siblings = 
+                let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+                let siblings : Result<Siblings.Response, ErrorClient> = 
                     Result.bind (Json.deserializeEx<Siblings.Response> S.jsonConfig >> Ok) json
                 return siblings
         } |> Job.toAsync
