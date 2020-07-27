@@ -677,13 +677,16 @@ type Client = {
             return submission
         } |> Job.toAsync
 
-    member this.Tos (parameters: Tos.Parameters) : Async<Result<Tos.Response, Set<string>>> =
+    member this.Tos 
+            (parameters: Tos.Parameters) 
+            : Async<Result<Tos.Response, ErrorClient>> =
         let request : TRequest = 
             this.CreateRequest this.Endpoints.Tos
             |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
         job {
-            let! json = this.RunRequestJob request
-            let tos = Result.bind (Json.deserializeEx<Tos.Response> S.jsonConfig >> Ok) json
+            let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+            let tos : Result<Tos.Response, ErrorClient> = 
+                Result.bind (Json.deserializeEx<Tos.Response> S.jsonConfig >> Ok) json
             return tos
         } |> Job.toAsync
 
