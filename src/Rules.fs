@@ -11,6 +11,7 @@ module T = Validator.Types
 // Type aliases
 // ---------------------------------
 
+type Regex = System.Text.RegularExpressions.Regex
 type String = System.String
 
 // ---------------------------------
@@ -41,4 +42,11 @@ let isNotEmptyString (property: string) : string -> T.Validation =
     }
     V.withFunction invalid (String.IsNullOrWhiteSpace >> not)
     
+let isFormattedDate (property: string) : string -> T.Validation =
+    let invalid : T.Invalid = {
+        Message = "Date must have `YYYY-MM-DD` format"
+        Property = property
+        Code = "isFormattedDate"
+    }    
+    V.withFunction invalid (fun (target: string) -> Regex.IsMatch(target, @"^\d{4}-\d{2}-\d{2}$"))
     
