@@ -47,6 +47,7 @@ module UserFriends = DeviantArt.Types.User.Friends
 module UserFriendsSearch = DeviantArt.Types.User.FriendsSearch
 module UserJournals = DeviantArt.Types.Browse.UserJournals
 module UserProfile = DeviantArt.Types.User.Profile
+module UserStatus = DeviantArt.Types.User.Status
 module UserStatuses = DeviantArt.Types.User.Statuses
 module WhoFaved = DeviantArt.Types.Deviation.WhoFaved
 
@@ -981,7 +982,19 @@ type Client = {
                 return statuses
         } |> Job.toAsync
 
-
+    member this.UserStatus
+            (parameters: UserStatus.Parameters)
+            : Async<Result<UserStatus.Response, ErrorClient>> =
+        let request : TRequest = 
+            this.CreateRequest (parameters.StatusId |> string |> this.Endpoints.UserStatus)
+            |> Client.AddQueryString "mature_content" (string parameters.MatureContent)
+        job {
+            let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+            let status : Result<UserStatus.Response, ErrorClient> = 
+                Result.bind (Json.deserializeEx<UserStatus.Response> S.jsonConfig >> Ok) json
+            return status
+        } |> Job.toAsync
+        
 
 
 
