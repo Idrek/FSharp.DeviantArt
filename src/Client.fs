@@ -28,6 +28,7 @@ module MoreLikeThisPreview = DeviantArt.Types.Browse.MoreLikeThisPreview
 module MRequest = C.Request
 module MResponse = C.Response
 module Newest = DeviantArt.Types.Browse.Newest
+module Placebo = DeviantArt.Types.Util.Placebo
 module Popular = DeviantArt.Types.Browse.Popular
 module Privacy = DeviantArt.Types.Data.Privacy
 module ProfileComments = DeviantArt.Types.Comments.Profile
@@ -1019,7 +1020,15 @@ type Client = {
                 return statuses
         } |> Job.toAsync
 
-
+    member this.Placebo () : Async<Result<Placebo.Response, ErrorClient>> =
+        job {
+            let request : TRequest = this.CreateRequest this.Endpoints.Placebo
+            let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+            let placebo : Result<Placebo.Response, ErrorClient> = 
+                Result.bind (Json.deserializeEx<Placebo.Response> S.jsonConfig >> Ok) json
+            return placebo
+        } |> Job.toAsync
+        
 
 
 
