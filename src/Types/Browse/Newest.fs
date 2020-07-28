@@ -29,6 +29,9 @@ type Parameters = {
             validateOptional "Limit" (fun this -> this.Limit) [
                 R.inRange (1, 120)
             ]
+            validateOptional "Category path" (fun this -> this.CategoryPath) [
+                R.isNotEmptyString
+            ]
         }
         v this |> Result.map (fun _ -> this)
 
