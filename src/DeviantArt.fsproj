@@ -51,6 +51,7 @@
     <Compile Include="Types/User/Statuses.fs" />
     <Compile Include="Types/User/Status.fs" />
     <Compile Include="Types/User/Watchers.fs" />
+    <Compile Include="Types/Util/Placebo.fs" />
     <Compile Include="Settings.fs" />
     <Compile Include="Types/FailureTokenResponse.fs" />
     <Compile Include="Types/AccessTokenResponse.fs" />
