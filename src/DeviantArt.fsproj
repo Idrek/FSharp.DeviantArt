@@ -48,6 +48,7 @@
     <Compile Include="Types/Browse/Daily.fs" />
     <Compile Include="Types/Browse/Category.fs" />
     <Compile Include="Types/User/Profile.fs" />
+    <Compile Include="Types/User/Statuses.fs" />
     <Compile Include="Settings.fs" />
     <Compile Include="Types/FailureTokenResponse.fs" />
     <Compile Include="Types/AccessTokenResponse.fs" />
