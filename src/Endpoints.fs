@@ -39,6 +39,7 @@ type Endpoints = {
     UserProfile: string -> string
     UserStatuses: string
     UserStatus: string -> string
+    UserWatchers: string -> string
 } with
     static member WithDefaults () : Endpoints =
         let prefix = "https://www.deviantart.com/api/v1/oauth2"
@@ -88,5 +89,6 @@ type Endpoints = {
             UserProfile = sprintf "%s/%s/profile/%s" prefix user
             UserStatuses = sprintf "%s/%s/statuses" prefix user
             UserStatus = sprintf "%s/%s/statuses/%s" prefix user
+            UserWatchers = sprintf "%s/%s/watchers/%s" prefix user
         }
 
