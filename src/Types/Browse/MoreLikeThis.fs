@@ -35,17 +35,11 @@ type Parameters = {
             validateOptional "Limit" (fun this -> this.Limit) [
                 R.inRange (1, 50)
             ]
+            validateOptional "Category path" (fun this -> this.CategoryPath) [
+                R.isNotEmptyString
+            ]
         }
         v this |> Result.map (fun _ -> this)
-        // match this with
-        // | { Offset = offset; Limit = limit } ->
-        //     let errors : array<string> = 
-        //         [|
-        //             Validation.inRange (0, 50000) "Offset" offset
-        //             Validation.inRange (1, 50) "Limit" limit
-        //         |] 
-        //         |> Array.choose (fun vOpt -> vOpt)
-        //     if Array.isEmpty errors then Ok this else Error errors
 
 type Response = {
     HasMore: bool
