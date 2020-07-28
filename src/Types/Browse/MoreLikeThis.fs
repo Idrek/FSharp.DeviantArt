@@ -41,6 +41,22 @@ type Parameters = {
         }
         v this |> Result.map (fun _ -> this)
 
+    static member Initialize 
+            (
+                seed: Guid,
+                ?categoryPath: Option<string>,
+                ?matureContent: bool,
+                ?offset: Option<int>,
+                ?limit: Option<int>
+            ) : Parameters =
+        {
+            Seed = seed
+            CategoryPath = defaultArg categoryPath None
+            MatureContent = defaultArg matureContent false
+            Offset = defaultArg offset None
+            Limit = defaultArg limit None
+        }
+
 type Response = {
     HasMore: bool
     NextOffset: Option<int>
