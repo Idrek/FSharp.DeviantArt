@@ -49,4 +49,13 @@ let isFormattedDate (property: string) : string -> T.Validation =
         Code = "isFormattedDate"
     }    
     V.withFunction invalid (fun (target: string) -> Regex.IsMatch(target, @"^\d{4}-\d{2}-\d{2}$"))
+
+let stringIsLongerThan (length: int) (property: string) : string -> T.Validation =
+    let invalid : T.Invalid = {
+        Message = sprintf "String must be longer than %d characters" length
+        Property = property
+        Code = "stringIsLongerThan"
+    }
+    V.withFunction invalid (fun (target: string) -> target.Length > length)
+    
     
