@@ -49,6 +49,7 @@ module UserJournals = DeviantArt.Types.Browse.UserJournals
 module UserProfile = DeviantArt.Types.User.Profile
 module UserStatus = DeviantArt.Types.User.Status
 module UserStatuses = DeviantArt.Types.User.Statuses
+module UserWatchers = DeviantArt.Types.User.Watchers
 module WhoFaved = DeviantArt.Types.Deviation.WhoFaved
 
 // ---------------------------------
@@ -994,7 +995,30 @@ type Client = {
                 Result.bind (Json.deserializeEx<UserStatus.Response> S.jsonConfig >> Ok) json
             return status
         } |> Job.toAsync
-        
+
+    member this.UserWatchers
+            (parameters: UserWatchers.Parameters)
+            : Async<Result<UserWatchers.Response, ErrorClient>> =
+        job {
+            match parameters.Validate() with
+            | Error errors ->
+                return
+                    errors 
+                    |> Set.map ErrorValidation.OfValidator 
+                    |> ErrorClient.ParametersValidation
+                    |> Error
+            | Ok validatedParameters ->
+                let request : TRequest =
+                    this.CreateRequest (this.Endpoints.UserWatchers parameters.Username)
+                    |> Client.AddOptionalQueryString "offset" (Option.map string validatedParameters.Offset)
+                    |> Client.AddOptionalQueryString "limit" (Option.map string validatedParameters.Limit)
+                    |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
+                let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+                let statuses : Result<UserWatchers.Response, ErrorClient> =
+                    Result.bind (Json.deserializeEx<UserWatchers.Response> S.jsonConfig >> Ok) json
+                return statuses
+        } |> Job.toAsync
+
 
 
 
