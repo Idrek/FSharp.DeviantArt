@@ -46,6 +46,7 @@ module Undiscovered = DeviantArt.Types.Browse.Undiscovered
 module UserFriends = DeviantArt.Types.User.Friends
 module UserFriendsSearch = DeviantArt.Types.User.FriendsSearch
 module UserJournals = DeviantArt.Types.Browse.UserJournals
+module UserProfile = DeviantArt.Types.User.Profile
 module WhoFaved = DeviantArt.Types.Deviation.WhoFaved
 
 // ---------------------------------
@@ -930,6 +931,29 @@ type Client = {
                 let friends : Result<UserFriendsSearch.Response, ErrorClient> =
                     Result.bind (Json.deserializeEx<UserFriendsSearch.Response> S.jsonConfig >> Ok) json
                 return friends
+        } |> Job.toAsync
+
+    member this.UserProfile
+            (parameters: UserProfile.Parameters)
+            : Async<Result<UserProfile.Response, ErrorClient>> =
+        job {
+            match parameters.Validate() with
+            | Error errors ->
+                return
+                    errors 
+                    |> Set.map ErrorValidation.OfValidator 
+                    |> ErrorClient.ParametersValidation
+                    |> Error
+            | Ok validatedParameters ->
+                let request : TRequest =
+                    this.CreateRequest (this.Endpoints.UserProfile validatedParameters.Username)
+                    |> Client.AddOptionalQueryString "ext_collections" (Option.map string validatedParameters.ExtCollections)
+                    |> Client.AddOptionalQueryString "ext_galleries" (Option.map string validatedParameters.ExtGalleries)
+                    |> Client.AddQueryString "mature_content" (string validatedParameters.MatureContent)
+                let! (json : Result<string, ErrorClient>) = this.RunRequestJob request
+                let profile : Result<UserProfile.Response, ErrorClient> =
+                    Result.bind (Json.deserializeEx<UserProfile.Response> S.jsonConfig >> Ok) json
+                return profile
         } |> Job.toAsync
 
 
