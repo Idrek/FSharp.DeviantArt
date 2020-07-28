@@ -56,6 +56,24 @@ type Parameters = {
         }
         v this |> Result.map (fun _ -> this) 
 
+    static member Initialize 
+            (
+                ?categoryPath: Option<string>,
+                ?q: Option<string>,
+                ?timerange: Option<Timerange>,
+                ?matureContent: bool,
+                ?offset: Option<int>,
+                ?limit: Option<int>
+            ) : Parameters =
+        {
+            CategoryPath = defaultArg categoryPath None
+            Q = defaultArg q None
+            Timerange = defaultArg timerange None
+            MatureContent = defaultArg matureContent false
+            Offset = defaultArg offset None
+            Limit = defaultArg limit None
+        }
+
 type Response = {
     HasMore: bool
     NextOffset: Option<int>
