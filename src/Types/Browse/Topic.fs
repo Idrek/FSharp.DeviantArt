@@ -28,6 +28,9 @@ type Parameters = {
             validateOptional "Limit" (fun this -> this.Limit) [
                 R.inRange (1, 24)
             ]
+            validateWith "Topic" (fun this -> this.Topic) [
+                R.isNotEmptyString
+            ]
         }
         v this |> Result.map (fun _ -> this)
 
