@@ -35,6 +35,22 @@ type Parameters = {
         }
         v this |> Result.map (fun _ -> this)
 
+    static member Initialize 
+            (
+                username: string,
+                ?featured: Option<bool>,
+                ?matureContent: bool,
+                ?offset: Option<int>,
+                ?limit: Option<int>
+            ) : Parameters =
+        {
+            Username = username
+            Featured = defaultArg featured None
+            MatureContent = defaultArg matureContent false
+            Offset = defaultArg offset None
+            Limit = defaultArg limit None
+        }
+
 type Response = {
     HasMore: bool
     NextOffset: Option<int>
