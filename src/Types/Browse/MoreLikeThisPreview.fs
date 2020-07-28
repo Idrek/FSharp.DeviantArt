@@ -20,7 +20,16 @@ type Guid = System.Guid
 type Parameters = {
     Seed: Guid
     MatureContent: bool
-}
+} with
+    static member Initialize 
+            (
+                seed: Guid,
+                ?matureContent: bool
+            ) : Parameters =
+        {
+            Seed = seed
+            MatureContent = defaultArg matureContent false
+        }
 
 type Response = {
     Seed: Guid
