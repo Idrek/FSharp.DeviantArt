@@ -31,6 +31,20 @@ type Parameters = {
         }
         v this |> Result.map (fun _ -> this)
 
+    static member Initialize 
+            (
+                ?numDeviationsPerTopic: Option<int>,
+                ?matureContent: bool,
+                ?offset: Option<int>,
+                ?limit: Option<int>
+            ) : Parameters =
+        {
+            NumDeviationsPerTopic = defaultArg numDeviationsPerTopic None
+            MatureContent = defaultArg matureContent false
+            Offset = defaultArg offset None
+            Limit = defaultArg limit None
+        }
+
 type TopicWithDeviations = {
     Name: string
     CanonicalName: string
