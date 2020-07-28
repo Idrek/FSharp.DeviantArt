@@ -32,6 +32,9 @@ type Parameters = {
             validateOptional "Category path" (fun this -> this.CategoryPath) [
                 R.isNotEmptyString
             ]
+            validateOptional "Query" (fun this -> this.Q) [
+                R.isNotEmptyString
+            ]
         }
         v this |> Result.map (fun _ -> this)
 
