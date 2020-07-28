@@ -51,7 +51,7 @@ type Comment = {
 }
 
 type Status = {
-    StatusId: Option<Guid>
+    Statusid: Option<Guid>
     Body: Option<D.Html>
     Ts: Option<string>
     Url: Option<string>
