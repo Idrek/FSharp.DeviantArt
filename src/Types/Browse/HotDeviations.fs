@@ -28,8 +28,25 @@ type Parameters = {
             validateOptional "Limit" (fun this -> this.Limit) [
                 R.inRange (1, 120)
             ]
+            validateOptional "Category path" (fun this -> this.CategoryPath) [
+                R.isNotEmptyString
+            ]
         }
         v this |> Result.map (fun _ -> this) 
+
+    static member Initialize 
+            (
+                ?categoryPath: Option<string>,
+                ?matureContent: bool,
+                ?offset: Option<int>,
+                ?limit: Option<int>
+            ) : Parameters =
+        {
+            CategoryPath = defaultArg categoryPath None
+            MatureContent = defaultArg matureContent false
+            Offset = defaultArg offset None
+            Limit = defaultArg limit None
+        }
                           
 and Response = {
     HasMore: bool
