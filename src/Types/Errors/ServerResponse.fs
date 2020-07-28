@@ -3,7 +3,8 @@ namespace DeviantArt.Types.Errors
 type ServerResponse = {
     Error: string
     ErrorDescription: string
-    ErrorCode: int
+    ErrorCode: Option<int>
+    ErrorDetails: Option<Map<string, string>>
     Status: string
 }
 
