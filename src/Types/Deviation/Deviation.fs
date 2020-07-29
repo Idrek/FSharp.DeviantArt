@@ -20,6 +20,15 @@ type Guid = System.Guid
 type Parameters = {
     DeviationId: Guid
     MatureContent: bool
-}
+} with
+    static member Initialize 
+            (
+                deviationId: Guid,
+                ?matureContent: bool
+            ) : Parameters =
+        {
+            DeviationId = deviationId
+            MatureContent = defaultArg matureContent false
+        }
 
 type Response = D.Deviation
