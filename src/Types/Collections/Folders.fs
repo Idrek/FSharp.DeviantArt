@@ -42,6 +42,24 @@ type Parameters = {
         }
         v this |> Result.map (fun _ -> this)
 
+    static member Initialize 
+            (
+                ?username: Option<string>,
+                ?calculateSize: Option<bool>,
+                ?extPreload: Option<bool>,
+                ?matureContent: bool,
+                ?offset: Option<int>,
+                ?limit: Option<int>
+            ) : Parameters =
+        {
+            Username = defaultArg username None
+            CalculateSize = defaultArg calculateSize None
+            ExtPreload = defaultArg extPreload None
+            MatureContent = defaultArg matureContent false
+            Offset = defaultArg offset None
+            Limit = defaultArg limit None
+        }
+
 type Folder = {
     Folderid: Guid
     Name: string
