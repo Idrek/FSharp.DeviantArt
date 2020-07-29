@@ -4,7 +4,7 @@ Client to retrieve data from DeviantArt endpoints available with the Client Cred
 
 ## Installation
 
-It's not uploaded to Nuget yes, so download source code, install locally and use it from a demo application, like:
+It's not uploaded to Nuget yet, so download source code, install locally and use it from a demo application, like:
 
 ```
 $ cd /tmp && git clone https://github.com/Idrek/FSharp.DeviantArt && cd FSharp.DeviantArt
