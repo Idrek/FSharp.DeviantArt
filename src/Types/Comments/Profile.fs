@@ -42,6 +42,24 @@ type Parameters = {
         }
         v this |> Result.map (fun _ -> this)
 
+    static member Initialize 
+            (
+                username: string,
+                ?commentId: Option<Guid>,
+                ?maxDepth: Option<int>,
+                ?matureContent: bool,
+                ?offset: Option<int>,
+                ?limit: Option<int>
+            ) : Parameters =
+        {
+            Username = username
+            CommentId = defaultArg commentId None
+            MaxDepth = defaultArg maxDepth None
+            MatureContent = defaultArg matureContent false
+            Offset = defaultArg offset None
+            Limit = defaultArg limit None
+        }
+
 type Response = {
     HasMore: bool
     NextOffset: Option<int>
