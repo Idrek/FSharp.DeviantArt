@@ -5,15 +5,13 @@ module DeviantArt.Types.User.Watchers
 // ---------------------------------
 
 module R = DeviantArt.Rules
+module S = DeviantArt.Types.Shared
 module T = Validator.Types
 module V = Validator.Api
 
 // ---------------------------------
 // Type aliases
 // ---------------------------------
-
-type User = DeviantArt.Types.Common.Deviation.User
-type Watch = DeviantArt.Types.User.Friends.Watch
 
 // ---------------------------------
 // Types
@@ -55,10 +53,10 @@ type Parameters = {
         }
 
 type Watcher = {
-    User: User
+    User: S.User
     IsWatching: bool
     Lastvisit: Option<string>
-    Watch: Watch
+    Watch: S.Watch
 }
 
 type Response = {

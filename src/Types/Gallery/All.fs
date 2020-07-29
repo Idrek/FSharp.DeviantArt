@@ -5,14 +5,13 @@ module DeviantArt.Types.Gallery.All
 // ---------------------------------
 
 module R = DeviantArt.Rules
+module S = DeviantArt.Types.Shared
 module T = Validator.Types
 module V = Validator.Api
 
 // ---------------------------------
 // Type aliases
 // ---------------------------------
-
-type Deviation = DeviantArt.Types.Common.Deviation.Deviation
 
 // ---------------------------------
 // Types
@@ -56,5 +55,5 @@ type Parameters = {
 type Response = {
     HasMore: bool
     NextOffset: Option<int>
-    Results: array<Deviation>
+    Results: array<S.Deviation>
 }

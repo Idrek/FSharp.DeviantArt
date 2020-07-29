@@ -5,6 +5,7 @@ module DeviantArt.Types.Deviation.Metadata
 // ---------------------------------
 
 module R = DeviantArt.Rules
+module S = DeviantArt.Types.Shared
 module T = Validator.Types
 module V = Validator.Api
 
@@ -12,10 +13,7 @@ module V = Validator.Api
 // Type aliases
 // ---------------------------------
 
-type Deviation = DeviantArt.Types.Common.Deviation.Deviation
 type Guid = System.Guid
-type Html = DeviantArt.Types.Common.Deviation.Html
-type User = DeviantArt.Types.Common.Deviation.User
 
 // ---------------------------------
 // Functions
@@ -92,10 +90,10 @@ type Collection = {
 type Metadata = {
     Deviationid: Guid
     Printid: Option<Guid>
-    Author: User
+    Author: S.User
     IsWatching: bool
     Title: string
-    Description: Html
+    Description: S.Html
     License: string
     AllowsComments: bool
     Tags: array<Tag>

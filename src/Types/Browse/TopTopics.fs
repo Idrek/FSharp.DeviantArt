@@ -4,8 +4,8 @@ module DeviantArt.Types.Browse.TopTopics
 // Module aliases
 // ---------------------------------
 
-module D = DeviantArt.Types.Common.Deviation
 module R = DeviantArt.Rules
+module S = DeviantArt.Types.Shared
 module T = Validator.Types
 module V = Validator.Api
 
@@ -28,7 +28,7 @@ type Parameters = {
 type TopTopic = {
     Name: string
     CanonicalName: string
-    ExampleDeviations: Option<array<D.Deviation>>
+    ExampleDeviations: Option<array<S.Deviation>>
 }
 
 type Response = {

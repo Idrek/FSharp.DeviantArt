@@ -5,6 +5,7 @@ module DeviantArt.Types.Gallery.Folders
 // ---------------------------------
 
 module R = DeviantArt.Rules
+module S = DeviantArt.Types.Shared
 module T = Validator.Types
 module V = Validator.Api
 
@@ -12,7 +13,6 @@ module V = Validator.Api
 // Type aliases
 // ---------------------------------
 
-type Deviation = DeviantArt.Types.Common.Deviation.Deviation
 type Guid = System.Guid
 
 // ---------------------------------
@@ -65,7 +65,7 @@ type Folder = {
     Parent: Option<Guid>
     Name: string
     Size: Option<int>
-    Deviations: Option<array<Deviation>>
+    Deviations: Option<array<S.Deviation>>
 }
 
 type Response = {

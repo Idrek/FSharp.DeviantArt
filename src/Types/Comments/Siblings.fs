@@ -4,8 +4,7 @@ module DeviantArt.Types.Comments.Siblings
 // Module aliases
 // ---------------------------------
 
-
-module D = DeviantArt.Types.Common.Deviation
+module S = DeviantArt.Types.Shared
 module R = DeviantArt.Rules
 module T = Validator.Types
 module V = Validator.Api
@@ -15,7 +14,6 @@ module V = Validator.Api
 // ---------------------------------
 
 type Guid = System.Guid
-type ThreadComment = DeviantArt.Types.Common.ThreadComment.ThreadComment
 
 // ---------------------------------
 // Types
@@ -62,32 +60,15 @@ type Comment = {
     Posted: string
     Replies: int
     Hidden: Option<string>
-    Body: D.Html
-    User: D.User
-}
-
-type Status = {
-    Statusid: Option<Guid>
-    Body: Option<D.Html>
-    Ts: Option<string>
-    Url: Option<string>
-    CommentsCount: Option<int>
-    IsShare: Option<bool>
-    IsDeleted: bool
-    Author: Option<D.User>
-    Items: Option<array<Item>>
-}
-and Item = {
-    Type: string
-    Status: Option<Status>
-    Deviation: Option<D.Deviation>
+    Body: S.Html
+    User: S.User
 }
 
 type Context = {
     Parent: Option<Comment>
-    ItemProfile: Option<D.User>
-    ItemDeviation: Option<D.Deviation>
-    ItemStatus: Option<Status>
+    ItemProfile: Option<S.User>
+    ItemDeviation: Option<S.Deviation>
+    ItemStatus: Option<S.Status>
 }
 
 type Response = {
@@ -95,7 +76,7 @@ type Response = {
     NextOffset: Option<int>
     HasLess: Option<bool>
     PrevOffset: Option<int>
-    Thread: array<ThreadComment>
+    Thread: array<S.ThreadComment>
     Context: Option<array<Context>>
 }
 

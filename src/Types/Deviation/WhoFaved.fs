@@ -5,6 +5,7 @@ module DeviantArt.Types.Deviation.WhoFaved
 // ---------------------------------
 
 module R = DeviantArt.Rules
+module S = DeviantArt.Types.Shared
 module T = Validator.Types
 module V = Validator.Api
 
@@ -13,7 +14,6 @@ module V = Validator.Api
 // ---------------------------------
 
 type Guid = System.Guid
-type User = DeviantArt.Types.Common.Deviation.User
 
 // ---------------------------------
 // Functions
@@ -52,7 +52,7 @@ type Parameters = {
         }
 
 type Who = {
-    User: User
+    User: S.User
     Time: int
 }
 

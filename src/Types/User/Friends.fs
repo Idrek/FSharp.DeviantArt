@@ -5,6 +5,7 @@ module DeviantArt.Types.User.Friends
 // ---------------------------------
 
 module R = DeviantArt.Rules
+module S = DeviantArt.Types.Shared
 module T = Validator.Types
 module V = Validator.Api
 
@@ -12,9 +13,7 @@ module V = Validator.Api
 // Type aliases
 // ---------------------------------
 
-type Deviation = DeviantArt.Types.Common.Deviation.Deviation
 type Guid = System.Guid
-type User = DeviantArt.Types.Common.Deviation.User
 
 // ---------------------------------
 // Types
@@ -55,23 +54,12 @@ type Parameters = {
             Limit = defaultArg limit None
         }
 
-type Watch = {
-    Friend: bool
-    Deviations: bool
-    Journals: bool
-    ForumThreads: bool
-    Critiques: bool
-    Scraps: bool
-    Activity: bool
-    Collections: bool
-}
-
 type Friend = {
-    User: User
+    User: S.User
     IsWatching: bool
     WatchesYou: bool
     Lastvisit: Option<string>
-    Watch: Watch
+    Watch: S.Watch
 }
 
 type Response = {

@@ -4,13 +4,13 @@ module DeviantArt.Types.User.Status
 // Module aliases
 // ---------------------------------
 
+module S = DeviantArt.Types.Shared
+
 // ---------------------------------
 // Type aliases
 // ---------------------------------
 
 type Guid = System.Guid
-// TODO: Move `Status` to common or shared.
-type Status = DeviantArt.Types.Comments.Siblings.Status
 
 // ---------------------------------
 // Types
@@ -31,4 +31,4 @@ type Parameters = {
             MatureContent = defaultArg matureContent false
         }
 
-type Response = Status
+type Response = S.Status

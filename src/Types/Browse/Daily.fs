@@ -4,8 +4,8 @@ module DeviantArt.Types.Browse.Daily
 // Module aliases
 // ---------------------------------
 
-module D = DeviantArt.Types.Common.Deviation
 module R = DeviantArt.Rules
+module S = DeviantArt.Types.Shared
 module T = Validator.Types
 module V = Validator.Api
 
@@ -37,6 +37,6 @@ type Parameters = {
         }
 
 type Response = {
-    Results: array<D.Deviation>
+    Results: array<S.Deviation>
 }
 

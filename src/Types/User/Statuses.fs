@@ -5,15 +5,13 @@ module DeviantArt.Types.User.Statuses
 // ---------------------------------
 
 module R = DeviantArt.Rules
+module S = DeviantArt.Types.Shared
 module T = Validator.Types
 module V = Validator.Api
 
 // ---------------------------------
 // Type aliases
 // ---------------------------------
-
-// TODO: Move `Status` to common or shared.
-type Status = DeviantArt.Types.Comments.Siblings.Status
 
 // ---------------------------------
 // Types
@@ -57,5 +55,5 @@ type Parameters = {
 type Response = {
     HasMore: bool
     NextOffset: Option<int>
-    Results: array<Status>
+    Results: array<S.Status>
 }

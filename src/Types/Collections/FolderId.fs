@@ -4,8 +4,8 @@ module DeviantArt.Types.Collections.FolderId
 // Module aliases
 // ---------------------------------
 
-module D = DeviantArt.Types.Common.Deviation
 module R = DeviantArt.Rules
+module S = DeviantArt.Types.Shared
 module T = Validator.Types
 module V = Validator.Api
 
@@ -61,6 +61,6 @@ type Response = {
     HasMore: bool
     NextOffset: Option<int>
     Name: Option<string>
-    Results: array<D.Deviation>
+    Results: array<S.Deviation>
 }       
 

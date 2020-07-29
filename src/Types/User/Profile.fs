@@ -5,6 +5,7 @@ module DeviantArt.Types.User.Profile
 // ---------------------------------
 
 module R = DeviantArt.Rules
+module S = DeviantArt.Types.Shared
 module T = Validator.Types
 module V = Validator.Api
 
@@ -12,12 +13,7 @@ module V = Validator.Api
 // Type aliases
 // ---------------------------------
 
-type Deviation = DeviantArt.Types.Common.Deviation.Deviation
 type Guid = System.Guid
-type Html = DeviantArt.Types.Common.Deviation.Html
-// TODO: Move `Status` to common.
-type Status = DeviantArt.Types.Comments.Siblings.Status
-type User = DeviantArt.Types.Common.Deviation.User
 
 // ---------------------------------
 // Types
@@ -72,7 +68,7 @@ type Gallery = {
 }
 
 type Response = {
-    User: User
+    User: S.User
     IsWatching: bool
     ProfileUrl: string
     UserIsArtist: bool
@@ -83,10 +79,10 @@ type Response = {
     Countryid: int
     Country: string
     Website: string
-    Bio: Html
+    Bio: S.Html
     CoverPhoto: Option<string>
-    ProfilePic: Option<Deviation>
-    LastStatus: Option<Status>
+    ProfilePic: Option<S.Deviation>
+    LastStatus: Option<S.Status>
     Stats: Stats
     Collections: Option<array<Collection>>
     Galleries: Option<array<Gallery>>

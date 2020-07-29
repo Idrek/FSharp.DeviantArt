@@ -1,4 +1,4 @@
-module DeviantArt.Types.Common.Deviation
+module DeviantArt.Types.Shared
 
 // ---------------------------------
 // Module aliases
@@ -120,3 +120,41 @@ and DailyDeviation = {
     Suggester: Option<User>
 }
 and Html = string
+
+type Watch = {
+    Friend: bool
+    Deviations: bool
+    Journals: bool
+    ForumThreads: bool
+    Critiques: bool
+    Scraps: bool
+    Activity: bool
+    Collections: bool
+}
+
+type Status = {
+    Statusid: Option<Guid>
+    Body: Option<Html>
+    Ts: Option<string>
+    Url: Option<string>
+    CommentsCount: Option<int>
+    IsShare: Option<bool>
+    IsDeleted: bool
+    Author: Option<User>
+    Items: Option<array<Item>>
+}
+and Item = {
+    Type: string
+    Status: Option<Status>
+    Deviation: Option<Deviation>
+}
+
+type ThreadComment = {
+    Commentid: Option<Guid>
+    Parentid: Option<Guid>
+    Posted: string
+    Replies: int
+    Hidden: Option<string>
+    Body: Html
+    User: User
+}

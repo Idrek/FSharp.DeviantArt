@@ -4,7 +4,7 @@ module DeviantArt.Types.Browse.HotDeviations
 // Module aliases
 // ---------------------------------
 
-module D = DeviantArt.Types.Common.Deviation
+module S = DeviantArt.Types.Shared
 module R = DeviantArt.Rules
 module T = Validator.Types
 module V = Validator.Api
@@ -51,6 +51,6 @@ type Parameters = {
 and Response = {
     HasMore: bool
     NextOffset: Option<int>
-    Results: array<D.Deviation>
+    Results: array<S.Deviation>
 }
 

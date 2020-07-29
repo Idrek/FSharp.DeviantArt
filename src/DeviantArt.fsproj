@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <Compile Include="Rules.fs" />
-    <Compile Include="Types/Deviation.fs" />
+    <Compile Include="Types/Shared.fs" />
     <Compile Include="Types/User/FriendsSearch.fs" />
     <Compile Include="Types/User/Friends.fs" />
     <Compile Include="Types/Errors/ServerResponse.fs" />
@@ -26,7 +26,6 @@
     <Compile Include="Types/Data/Submission.fs" />
     <Compile Include="Types/Data/Privacy.fs" />
     <Compile Include="Types/Data/Countries.fs" />
-    <Compile Include="Types/ThreadComment.fs" />
     <Compile Include="Types/Comments/Status.fs" />
     <Compile Include="Types/Comments/Profile.fs" />
     <Compile Include="Types/Comments/Deviation.fs" />

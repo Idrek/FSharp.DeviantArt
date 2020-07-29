@@ -4,7 +4,7 @@ module DeviantArt.Types.Deviation.Deviation
 // Module aliases
 // ---------------------------------
 
-module D = DeviantArt.Types.Common.Deviation
+module S = DeviantArt.Types.Shared
 
 // ---------------------------------
 // Type aliases
@@ -31,4 +31,4 @@ type Parameters = {
             MatureContent = defaultArg matureContent false
         }
 
-type Response = D.Deviation
+type Response = S.Deviation

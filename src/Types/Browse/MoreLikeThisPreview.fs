@@ -4,7 +4,7 @@ module DeviantArt.Types.Browse.MoreLikeThisPreview
 // Module aliases
 // ---------------------------------
 
-module D = DeviantArt.Types.Common.Deviation
+module S = DeviantArt.Types.Shared
 
 // ---------------------------------
 // Type aliases
@@ -33,7 +33,7 @@ type Parameters = {
 
 type Response = {
     Seed: Guid
-    Author: D.User
-    MoreFromArtist: array<D.Deviation>
-    MoreFromDa: array<D.Deviation>
+    Author: S.User
+    MoreFromArtist: array<S.Deviation>
+    MoreFromDa: array<S.Deviation>
 }
