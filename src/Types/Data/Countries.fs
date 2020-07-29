@@ -16,7 +16,14 @@ module V = Validator.Api
 [<CLIMutable>]
 type Parameters = {
     MatureContent: bool
-}
+} with
+    static member Initialize 
+            (
+                ?matureContent: bool
+            ) : Parameters =
+        {
+            MatureContent = defaultArg matureContent false
+        }
 
 type Country = {
     Countryid: int
