@@ -30,8 +30,8 @@ with
 
 [<CLIMutable>]
 type Parameters = {
+    FolderId: Guid
     Username: Option<string>
-    FolderId: Option<Guid>
     Mode: Option<Mode>
     Offset: Option<int>
     Limit: Option<int>
@@ -45,21 +45,24 @@ type Parameters = {
             validateOptional "Limit" (fun this -> this.Limit) [
                 R.inRange (1, 24)
             ]
+            validateOptional "Username" (fun this -> this.Username) [
+                R.isNotEmptyString
+            ]
         }
         v this |> Result.map (fun _ -> this)
 
     static member Initialize 
             (
+                folderId: Guid,
                 ?username: Option<string>,
-                ?folderId: Option<Guid>,
                 ?mode: Option<Mode>,
                 ?matureContent: bool,
                 ?offset: Option<int>, 
                 ?limit: Option<int>
             ) : Parameters =
         {
+            FolderId = folderId
             Username = defaultArg username None
-            FolderId = defaultArg folderId None
             Mode = defaultArg mode (Some Popular)
             MatureContent = defaultArg matureContent false
             Offset = defaultArg offset None

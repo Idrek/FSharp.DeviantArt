@@ -825,10 +825,7 @@ type Client = {
                     |> Error
             | Ok validatedParameters ->
                 let request : TRequest =
-                    this.CreateRequest (
-                        Option.map string parameters.FolderId 
-                        |> Option.defaultValue String.Empty 
-                        |> this.Endpoints.GalleryFolderId)
+                    this.CreateRequest (string parameters.FolderId |> this.Endpoints.GalleryFolderId)
                     |> Client.AddOptionalQueryString "username" validatedParameters.Username
                     |> Client.AddOptionalQueryString "mode" 
                         (Option.map (fun m -> m.ToString()) validatedParameters.Mode)
