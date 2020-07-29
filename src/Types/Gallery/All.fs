@@ -33,6 +33,9 @@ type Parameters = {
             validateOptional "Limit" (fun this -> this.Limit) [
                 R.inRange (1, 24)
             ]
+            validateOptional "Username" (fun this -> this.Username) [
+                R.isNotEmptyString
+            ]
         }
         v this |> Result.map (fun _ -> this)
 
