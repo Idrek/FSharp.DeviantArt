@@ -41,6 +41,22 @@ type Parameters = {
         }
         v this |> Result.map (fun _ -> this)
 
+    static member Initialize 
+            (
+                folderid: Guid,
+                ?username: Option<string>,
+                ?matureContent: bool,
+                ?offset: Option<int>,
+                ?limit: Option<int>
+            ) : Parameters =
+        {
+            Folderid = folderid
+            Username = defaultArg username None
+            MatureContent = defaultArg matureContent false
+            Offset = defaultArg offset None
+            Limit = defaultArg limit None
+        }
+
 type Response = {
     HasMore: bool
     NextOffset: Option<int>
